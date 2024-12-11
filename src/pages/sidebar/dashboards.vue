@@ -12,6 +12,7 @@ const layoutSwitcher = useLayoutSwitcher()
     :is="(layoutSwitcher.dynamicLayoutComponent as any)"
     v-bind="layoutSwitcher.dynamicLayoutProps"
     close-on-change
+    :open-on-mounted="true"
     default-sidebar="dashboard"
   >
     <!-- Content Wrapper -->

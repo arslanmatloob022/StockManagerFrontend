@@ -102,7 +102,7 @@ export const useLayoutSwitcher = defineStore('layoutSwitcher', () => {
   type SidebarComponentsId = keyof typeof sidebarComponents
   const sidebarComponentsIds = Object.keys(sidebarComponents)
 
-  const sidebarLayoutId = ref<SidebarComponentsId>('sidebar-default')
+  const sidebarLayoutId = ref<SidebarComponentsId>('sideblock-color-curved')
   const sidebarLayoutComponent = computed(() => {
     return sidebarComponents[sidebarLayoutId.value] || SidebarLayout
   })
@@ -162,7 +162,7 @@ export const useLayoutSwitcher = defineStore('layoutSwitcher', () => {
     }
   })
 
-  const contentSize = ref<'default' | 'large' | 'wide' | 'full'>('default')
+  const contentSize = ref<'default' | 'large' | 'wide' | 'full'>('wide')
 
   const dynamicLayoutProps = computed(() => {
     if (isNavbarRoute.value) {

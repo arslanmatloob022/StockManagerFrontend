@@ -77,7 +77,7 @@ export function createDarkmode(): Plugin {
         document.documentElement.animate(
           { clipPath: isDark.value ? clipPath.reverse() : clipPath },
           {
-            duration: 300,
+            duration: 1000,
             easing: 'ease-in',
             pseudoElement: `::view-transition-${isDark.value ? 'old' : 'new'}(root)`,
           },

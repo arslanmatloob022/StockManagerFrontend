@@ -1,718 +1,774 @@
 <script setup lang="ts">
-import Layout from '/@src/layouts/landing.vue'
-import packageJson from '../../package.json'
+type StepId = 'login' | 'forgot-password'
+const step = ref<StepId>('login')
+const isLoading = ref(false)
+const router = useRouter()
+const route = useRoute()
+const notyf = useNotyf()
+const token = useUserToken()
+const $fetch = useApiFetch()
+const redirect = route.query.redirect as string
+const controller = new AbortController() // Create an AbortController instance
+const { signal } = controller
+const handleLogin = async () => {
+  if (!isLoading.value) {
+    // isLoading.value = true
+    // const response = await $fetch.raw('/api/users', {
+    //     method: 'POST', 
+    //     body: {
+    //       name: 'John Doe',
+    //       email: 'john.doe@example.com',
+    //     }, 
+    //   })
+    const { _data: resp, headers } = await $fetch.raw(`/api/users`, {
+    query: {
+     
+    },
+    signal
+  })
+  console.log(resp, headers)
+    await sleep(2000)
+    console.log('set token logged-in')
+    token.value = 'logged-in'
 
-const activeTab = ref<'components' | 'forms' | 'plugins'>('components')
+    notyf.dismissAll()
+    notyf.primary('Welcome back, Erik Kovalsky')
+
+    if (redirect) {
+      router.push(redirect)
+    }
+    else {
+      router.push('/sidebar/dashboards')
+    }
+
+    isLoading.value = false
+  }
+}
 
 useHead({
-  title: 'Vuero - A complete Vue 3 design system',
+  title: 'Auth Login 1 - Vuero',
 })
 </script>
 
 <template>
-  <Layout>
-    <div class="hero is-fullheight is-active">
-      <div class="hero-body has-text-centered">
-        <div class="container">
-          <h1 class="title is-1 is-bold dark-white is-leading">
-            Build fast & beautiful web apps with <span>Vuero</span>
-          </h1>
-          <h3 class="subtitle is-4">
-            Premium Vue Dashboard & Webapp UI Kit
-            <span class="tag is-primary is-rounded">{{ packageJson.version }}</span>
-          </h3>
+  <div class="modern-login">
+    <div class="underlay h-hidden-mobile h-hidden-tablet-p" />
 
-          <div class="buttons mb-2">
-            <VButton
-              href="https://go.cssninja.io/buy-vuero"
-              color="primary"
-              rounded
-            >
-              Buy Vuero Today
-            </VButton>
-          </div>
-
-          <div class="trusted-by mb-4">
-            <span>Trusted by <span>2000+ customers</span></span>
-            <div class="rating">
-              <VIcon icon="uiw:star-on" />
-              <VIcon icon="uiw:star-on" />
-              <VIcon icon="uiw:star-on" />
-              <VIcon icon="uiw:star-on" />
-              <VIcon icon="uiw:star-on" />
-            </div>
-          </div>
-
-          <div class="hero-mockup-wrap">
-            <div class="hero-mockup">
-              <img
-                class="light-image-block"
-                src="/images/illustrations/landing/app-1.webp"
-                alt=""
-              >
-              <img
-                class="dark-image-block"
-                src="/images/illustrations/landing/app-1-dark.webp"
-                alt=""
-              >
-            </div>
-            <div class="hero-mockup-gradient" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!--Stacks Section-->
-    <div
-      id="stacks-section"
-      class="section"
-    >
-      <div class="container">
-        <!--Stacks-->
-        <div class="stacks">
-          <div>
-            <Tippy
-              class="has-help-cursor"
-              interactive
-              placement="top"
-            >
-              <div class="stack">
-                <img
-                  src="/images/icons/stacks/vuejs.svg"
-                  alt=""
-                >
-              </div>
-              <template #content>
-                <StackPopoverContent
-                  :stack="{
-                    name: 'Vue 3',
-                    subtitle: 'Composition API',
-                    logo: '/images/icons/stacks/vuejs.svg',
-                    description:
-                      'The Progressive JavaScript Framework for building user interfaces.',
-                    homepage: 'https://v3.vuejs.org/',
-                    github: 'https://github.com/vuejs/vue-next',
-                  }"
-                />
-              </template>
-            </Tippy>
-          </div>
-
-          <div>
-            <Tippy
-              class="has-help-cursor"
-              interactive
-              placement="top"
-            >
-              <div class="stack">
-                <img
-                  src="/images/icons/stacks/vite.svg"
-                  alt=""
-                >
-              </div>
-              <template #content>
-                <StackPopoverContent
-                  :stack="{
-                    name: 'Vite',
-                    subtitle: 'Next Generation Frontend Tooling',
-                    logo: '/images/icons/stacks/vite.svg',
-                    description:
-                      'Vite is a new breed of frontend build tool that significantly improves the frontend development experience.',
-                    homepage: 'https://vitejs.dev/',
-                    github: 'https://github.com/vitejs/vite',
-                  }"
-                />
-              </template>
-            </Tippy>
-          </div>
-
-          <div>
-            <Tippy
-              class="has-help-cursor"
-              interactive
-              placement="top"
-            >
-              <div class="stack">
-                <img
-                  src="/images/icons/stacks/bulma.svg"
-                  alt=""
-                >
-              </div>
-              <template #content>
-                <StackPopoverContent
-                  :stack="{
-                    name: 'Bulma',
-                    subtitle: 'The modern CSS framework',
-                    logo: '/images/icons/stacks/bulma.svg',
-                    description:
-                      'Bulma is a free, open source framework that provides ready-to-use frontend components.',
-                    homepage: 'https://bulma.io/',
-                    github: 'https://github.com/jgthms/bulma',
-                  }"
-                />
-              </template>
-            </Tippy>
-          </div>
-
-          <div>
-            <Tippy
-              class="has-help-cursor"
-              interactive
-              placement="top"
-            >
-              <div class="stack">
-                <img
-                  src="/images/icons/stacks/sass.svg"
-                  alt=""
-                >
-              </div>
-              <template #content>
-                <StackPopoverContent
-                  :stack="{
-                    name: 'Sass',
-                    subtitle: 'Makes CSS fun again',
-                    logo: '/images/icons/stacks/sass.svg',
-                    description:
-                      'Sass is an extension of CSS, adding nested rules, variables, mixins, selector inheritance, and more.',
-                    homepage: 'https://sass-lang.com/',
-                    github: 'https://github.com/sass/sass',
-                  }"
-                />
-              </template>
-            </Tippy>
-          </div>
-
-          <div>
-            <Tippy
-              class="has-help-cursor"
-              interactive
-              placement="top"
-            >
-              <div class="stack">
-                <img
-                  src="/images/icons/stacks/typescript.svg"
-                  alt=""
-                >
-              </div>
-              <template #content>
-                <StackPopoverContent
-                  :stack="{
-                    name: 'Typescript',
-                    subtitle: 'Javascript enhanced',
-                    logo: '/images/icons/stacks/typescript.svg',
-                    description:
-                      'TypeScript adds optional types to JavaScript that support tools for large-scale JavaScript applications.',
-                    homepage: 'https://www.typescriptlang.org/',
-                    github: 'https://github.com/microsoft/TypeScript',
-                  }"
-                />
-              </template>
-            </Tippy>
-          </div>
-        </div>
-
-        <!--Title-->
-        <div class="section-title has-text-centered">
-          <h2 class="title is-2">
-            Amazing Features
-          </h2>
-          <h4>All you need to build your project is there.</h4>
-        </div>
-
-        <!--Boxed Features-->
-        <div class="boxed-features">
-          <div class="flex-card light-bordered hover-inset">
-            <div class="flex-cell is-bordered">
-              <i
-                aria-hidden="true"
-                class="lnil lnil-toolbox"
-              />
-              <h3>500+ Vue Components</h3>
-              <p>An incredible set of building blocks with dark mode support.</p>
-            </div>
-            <div class="flex-cell is-bordered">
-              <i
-                aria-hidden="true"
-                class="lnil lnil-display-alt"
-              />
-              <h3>220+ Demos</h3>
-              <p>Vuero ships with a huge number of demos to kickstart your project.</p>
-            </div>
-            <div class="flex-cell is-bordered">
-              <i
-                aria-hidden="true"
-                class="lnil lnil-moon"
-              />
-              <h3>Native Dark Mode</h3>
-              <p>Every single piece of UI is natively dark mode ready.</p>
-            </div>
-            <div class="flex-cell is-bordered no-border-edge">
-              <i
-                aria-hidden="true"
-                class="lnil lnil-rocket"
-              />
-              <h3>Active Support</h3>
-              <p>Our support helps you solve any issues you have</p>
-            </div>
-            <div class="flex-cell">
-              <i
-                aria-hidden="true"
-                class="lnil lnil-code"
-              />
-              <h3>Clean Code</h3>
-              <p>Vuero's codebase is huge, but structured and easy to understand</p>
-            </div>
-            <div class="flex-cell">
-              <i
-                aria-hidden="true"
-                class="lnil lnil-plug"
-              />
-              <h3>Premium Icons</h3>
-              <p>Vuero ships with the premium Line Icons set ($30 value).</p>
-            </div>
-            <div class="flex-cell">
-              <i
-                class="lnil lnil-switch"
-                aria-hidden="true"
-              />
-              <h3>RTL Support</h3>
-              <p>Vuero supports RTL layouts. Configure it in less than a minute.</p>
-            </div>
-            <div class="flex-cell no-border-edge">
-              <i
-                aria-hidden="true"
-                class="lnil lnil-file-name"
-              />
-              <h3>Extensive Docs</h3>
-              <p>A nice documentation to help you get started fast</p>
-            </div>
-          </div>
-        </div>
-
-        <!--CTA-->
-        <div class="cta-block">
-          <div class="head-text">
-            <h3>Buy Vuero</h3>
-            <p>Available on Envato Market</p>
-          </div>
-          <div class="head-action">
-            <div class="buttons">
-              <a
-                href="http://go.cssninja.io/buy-vuero"
-                class="button v-button is-primary is-rounded is-elevated action-button"
-              >
-                Buy Now
-              </a>
-              <a
-                target="_blank"
-                href="https://go.cssninja.io/discord"
-                class="button chat-button"
-              >
-                Chat with us
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!--Title-->
-        <div class="section-title has-text-centered">
-          <h2 class="title is-2">
-            Developer Experience
-          </h2>
-          <h4>A set of professional tools to build professional apps.</h4>
-        </div>
-
-        <!--Boxed Features-->
-        <div class="boxed-features is-flat pb-6">
-          <div class="flex-card light-bordered hover-inset">
-            <div class="flex-cell is-bordered">
-              <div class="icon-holder">
-                <VIcon
-                  icon="mdi:vuejs"
-                />
-              </div>
-              <h3>Vue 3</h3>
-              <p>
-                Vue 3 and its powerful composition API makes your experience pleasant.
-              </p>
-            </div>
-            <div class="flex-cell">
-              <div class="icon-holder">
-                <VIcon
-                  icon="bxl:typescript"
-                />
-              </div>
-              <h3>Typescript</h3>
-              <p>Typescript makes things much more simpler but remains optional.</p>
-            </div>
-            <div class="flex-cell is-bordered">
-              <div class="icon-holder">
-                <VIcon
-                  class="smaller"
-                  icon="simple-icons:vite"
-                />
-              </div>
-              <h3>Vite JS</h3>
-              <p>
-                Vite 4 is blazing fast, does HOT reloading and parses all your
-                components.
-              </p>
-            </div>
-            <div class="flex-cell">
-              <div class="icon-holder">
-                <VIcon
-                  class="smaller"
-                  icon="akar-icons:vscode-fill"
-                />
-              </div>
-              <h3>VS Code Integration</h3>
-              <p>
-                Vuero is fully integrated with VS Code to help you produce quality
-                checked code.
-              </p>
-            </div>
-            <div class="flex-cell is-bordered">
-              <div class="icon-holder">
-                <VIcon
-                  class="smaller"
-                  icon="file-icons:eslint"
-                />
-              </div>
-              <h3>ES Lint</h3>
-              <p>
-                ES Lint watches your javascript code and makes sure it matches the best
-                standards.
-              </p>
-            </div>
-            <div class="flex-cell">
-              <div class="icon-holder">
-                <VIcon
-                  class="smaller"
-                  icon="file-icons:stylelint"
-                />
-              </div>
-              <h3>Stylelint</h3>
-              <p>
-                Stylelint looks for poorly formatted styles and fixes everything for
-                you.
-              </p>
-            </div>
-            <div class="flex-cell">
-              <div class="icon-holder">
-                <VIcon
-                  class="smaller"
-                  icon="simple-icons:iconify"
-                />
-              </div>
-              <h3>Iconify</h3>
-              <p>
-                Iconify displays icons inside your code editor so you always know what
-                you're doing.
-              </p>
-            </div>
-            <div class="flex-cell">
-              <div class="icon-holder">
-                <VIcon
-                  class="smaller"
-                  icon="simple-icons:bun"
-                />
-              </div>
-              <h3>Bun</h3>
-              <p>
-                Support Bun as alternative to Nodejs for a faster and more efficient
-                development.
-              </p>
-            </div>
-            <div class="flex-cell">
-              <div class="icon-holder">
-                <VIcon
-                  class="smaller"
-                  icon="simple-icons:docker"
-                />
-              </div>
-              <h3>Docker</h3>
-              <p>
-                Vuero ships with a Docker file to make your test deployments faster and
-                easier.
-              </p>
-            </div>
-            <div class="flex-cell">
-              <div class="icon-holder">
-                <VIcon
-                  class="smaller"
-                  icon="ic:twotone-check-circle"
-                />
-              </div>
-              <h3>Props Validation</h3>
-              <p>
-                Vuero base components ship with props validation to prevent unexpected
-                errors.
-              </p>
-            </div>
-            <div class="flex-cell">
-              <div class="icon-holder">
-                <VIcon
-                  class="smaller"
-                  icon="solar:sidebar-minimalistic-bold"
-                />
-              </div>
-              <h3>Project Structure</h3>
-              <p>
-                A clean and organized project structure lets you find any file or
-                content quickly.
-              </p>
-            </div>
-            <div class="flex-cell">
-              <div class="icon-holder">
-                <VIcon
-                  class="smaller"
-                  icon="ic:round-menu-book"
-                />
-              </div>
-              <h3>Component Guide</h3>
-              <p>
-                A full component / plugin documentation with a lot of code examples
-                lives inside Vuero.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div
-      id="vuero-demos"
-      class="section"
-    >
-      <div class="container">
-        <!--Title-->
-        <div class="section-title has-text-centered">
-          <h2 class="title is-2">
-            Outstanding Demos
-          </h2>
-          <h4>Check out a wide variety of demo pages.</h4>
-        </div>
-
-        <!--Demos partial-->
-        <LandingDemos />
-      </div>
-    </div>
-
-    <!--Side Features Section-->
-    <MarketingSideFeatures
-      title="Top Tier Product"
-      subtitle="Vuero has been carefully handcrafted."
-      :features="[
-        {
-          title: 'Incredible UI',
-          content: `Vuero's UI has been carefully thought and designed, and is simply one of the best you'll find on the market. It's visual power and its modularity will let you build great apps seamlessly.`,
-          image: '/images/illustrations/landing/feature-1.webp',
-          darkImage: '/images/illustrations/landing/feature-1-dark.webp',
-        },
-        {
-          title: 'Playful Vectors',
-          content: `Vuero ships with a lot of svg illustrations representing various elements that can be used in a website, following very high quality standards.`,
-          image: '/images/illustrations/landing/feature-2.svg',
-          darkImage: '/images/illustrations/landing/feature-2-dark.svg',
-        },
-        {
-          title: 'Handcrafted UI',
-          content: `Vuero ships with it's own component library based on the Bulma.io CSS framework. Each component has been carefully handcrafted and natively supports dark mode.`,
-          image: '/images/illustrations/landing/feature-3.svg',
-          darkImage: '/images/illustrations/landing/feature-3-dark.svg',
-        },
-      ]"
-    >
-      <div class="cta-block no-border">
-        <div class="head-text">
-          <h3>Want to learn more?</h3>
-          <p>Check out the Vuero documentation</p>
-        </div>
-        <div class="head-action">
-          <div class="buttons">
-            <VButton
-              class="action-button"
-              color="primary"
-              rounded
-              elevated
-              href="https://docs.cssninja.io/vuero"
-            >
-              Read the Docs
-            </VButton>
-            <a
-              href="https://cssninja.io"
-              target="_blank"
-              rel="noopener"
-              class="button chat-button is-secondary"
-            >
-              Chat with us
-            </a>
-          </div>
-        </div>
-      </div>
-    </MarketingSideFeatures>
-
-    <div
-      id="vuero-components"
-      class="section"
-    >
-      <div class="container">
-        <div class="columns is-vcentered">
-          <div class="column is-6 is-offset-3 has-text-centered">
-            <!--Title-->
-            <div class="section-title has-text-centered p-b-40">
-              <h2 class="title is-3">
-                Reusable components
-              </h2>
-              <h4>Vuero ships with a full component library.</h4>
-            </div>
-          </div>
-        </div>
-        <div class="columns is-vcentered component-features is-flex-tablet-p">
-          <div class="column is-4">
-            <!-- Side icon box -->
-            <div class="media-flex">
-              <div class="left-icon">
-                <i
-                  aria-hidden="true"
-                  class="lnil lnil-construction"
-                />
-              </div>
-              <div class="flex-meta">
-                <h4>Modular</h4>
-                <p>
-                  Vuero uses a modular CSS structure leveraging the power of Sass. Each
-                  component family has it's own files and encapsulated styles.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="column is-4">
-            <!-- Side icon box -->
-            <div class="media-flex">
-              <div class="left-icon">
-                <i
-                  aria-hidden="true"
-                  class="lnil lnil-code"
-                />
-              </div>
-              <div class="flex-meta">
-                <h4>Code Blocks</h4>
-                <p>
-                  A lot of code examples are provided out of the box with syntax
-                  highlighting. Building your app layout is a simple as copying and
-                  pasting.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="column is-4">
-            <!-- Side icon box -->
-            <div class="media-flex">
-              <div class="left-icon">
-                <i
-                  aria-hidden="true"
-                  class="lnil lnil-color-palette"
-                />
-              </div>
-              <div class="flex-meta">
-                <h4>Easy Theming</h4>
-                <p>
-                  Vuero's components provide easy to use class based color variations
-                  and modifiers to help you write less CSS. Theming is also very easy.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!--CTA-->
-        <p class="p-t-40 p-b-40 has-text-centered">
-          <a
-            href="http://go.cssninja.io/buy-vuero"
-            class="button v-button is-rounded is-primary is-elevated is-bold is-huge"
-          >
-            Buy Now
-          </a>
-        </p>
-
-        <!--Components-->
-        <div class="vuero-components p-t-40 p-b-60">
-          <div class="vertical-tabs-wrapper">
-            <VTabs
-              v-model:selected="activeTab"
-              :tabs="[
-                {
-                  label: 'Components',
-                  value: 'components',
-                },
-                {
-                  label: 'Forms',
-                  value: 'forms',
-                },
-                {
-                  label: 'Plugins',
-                  value: 'plugins',
-                },
-              ]"
-            >
-              <template #tab>
-                <div class="content-wrap">
-                  <LandingComponents :active-tab="activeTab" />
+    <div class="columns is-gapless is-vcentered">
+      <div class="column is-relative is-8 h-hidden-mobile h-hidden-tablet-p">
+        <div class="hero is-fullheight is-image">
+          <div class="hero-body">
+            <div class="container">
+              <div class="columns">
+                <div class="column">
+                  <img
+                    class="hero-image"
+                    src="/images/illustrations/login/station.svg"
+                    alt=""
+                  >
                 </div>
-              </template>
-            </VTabs>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-4 is-relative">
+        <div class="top-tools">
+          <RouterLink
+            to="/"
+            class="top-logo"
+          >
+            <AnimatedLogo
+              width="38px"
+              height="38px"
+            />
+          </RouterLink>
+
+          <VDarkmodeToggle />
+        </div>
+        <div class="is-form">
+          <div class="is-form-inner">
+            <div
+              class="form-text"
+              :class="[step !== 'login' && 'is-hidden']"
+            >
+              <h2>Sign In</h2>
+              <p>Welcome back to your account.</p>
+            </div>
+            <div
+              class="form-text"
+              :class="[step === 'login' && 'is-hidden']"
+            >
+              <h2>Recover Account</h2>
+              <p>Reset your account password.</p>
+            </div>
+            <form
+              method="post"
+              novalidate
+              :class="[step !== 'login' && 'is-hidden']"
+              class="login-wrapper"
+              @submit.prevent="handleLogin"
+            >
+              <VMessage color="primary">
+                <div>
+                  <strong class="pr-1">email:</strong>
+                  <span>john.doe@cssninja.io</span>
+                </div>
+                <div>
+                  <strong class="pr-1">password:</strong>
+                  <span>ada.lovelace</span>
+                </div>
+              </VMessage>
+
+              <VField>
+                <VControl icon="lnil lnil-envelope autv-icon">
+                  <VLabel class="auth-label">
+                    Email Address
+                  </VLabel>
+                  <VInput
+                    type="email"
+                    autocomplete="current-password"
+                  />
+                </VControl>
+              </VField>
+              <VField>
+                <VControl icon="lnil lnil-lock-alt autv-icon">
+                  <VLabel class="auth-label">
+                    Password
+                  </VLabel>
+                  <VInput
+                    type="password"
+                    autocomplete="current-password"
+                  />
+                </VControl>
+              </VField>
+
+              <VField>
+                <VControl class="is-flex">
+                  <VLabel
+                    raw
+                    class="remember-toggle"
+                  >
+                    <VInput
+                      raw
+                      type="checkbox"
+                    />
+
+                    <span class="toggler">
+                      <span class="active">
+                        <VIcon
+                          icon="lucide:check"
+                        />
+                      </span>
+                      <span class="inactive">
+                        <VIcon
+                          icon="lucide:circle"
+                        />
+                      </span>
+                    </span>
+                  </VLabel>
+                  <VLabel
+                    raw
+                    class="remember-me"
+                  >
+                    Remember Me
+                  </VLabel>
+                  <a
+                    tabindex="0"
+                    role="button"
+                    @keydown.enter.prevent="step = 'forgot-password'"
+                    @click="step = 'forgot-password'"
+                  >
+                    Forgot Password?
+                  </a>
+                </VControl>
+              </VField>
+
+              <div class="button-wrap has-help">
+                <VButton
+                  id="login-button"
+                  :loading="isLoading"
+                  color="primary"
+                  type="submit"
+                  size="big"
+                  rounded
+                  raised
+                  bold
+                >
+                  Confirm
+                </VButton>
+                <span>
+                  Or
+                  <RouterLink to="/auth/signup-1">Create</RouterLink>
+                  an account.
+                </span>
+              </div>
+            </form>
+
+            <form
+              method="post"
+              novalidate
+              :class="[step !== 'forgot-password' && 'is-hidden']"
+              class="login-wrapper"
+              @submit.prevent
+            >
+              <p class="recover-text">
+                Enter your email and click on the confirm button to reset your password.
+                We'll send you an email detailing the steps to complete the procedure.
+              </p>
+
+              <VField>
+                <VControl icon="lnil lnil-envelope autv-icon">
+                  <VLabel class="auth-label">
+                    Email Address
+                  </VLabel>
+                  <VInput
+                    type="email"
+                    autocomplete="current-password"
+                  />
+                </VControl>
+              </VField>
+              <div class="button-wrap">
+                <VButton
+                  color="white"
+                  size="big"
+                  lower
+                  rounded
+                  @click="step = 'login'"
+                >
+                  Cancel
+                </VButton>
+                <VButton
+                  color="primary"
+                  size="big"
+                  type="submit"
+                  lower
+                  rounded
+                  solid
+                  @click="step = 'login'"
+                >
+                  Confirm
+                </VButton>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
-
-    <MarketingSideFeatures
-      title="3 More Reasons To Choose Vuero"
-      subtitle="If you're not convinced yet, here's some more."
-      :features="[
-        {
-          title: 'Professional',
-          content: `Vuero is a professional product to build professional applications. You'll find everything you need to build a project that is up to the highest standards of web development.`,
-          image: '/images/illustrations/landing/feature-4.svg',
-          darkImage: '/images/illustrations/landing/feature-4-dark.svg',
-        },
-        {
-          title: 'Fast Development',
-          content: `Vuero ships with a Vitejs development server that will assist you when customizing the template. It handles .vue files compilation as well as SCSS and Typescript code. The page is refreshed each time you hit the save trigger in your favorite editor.`,
-          image: '/images/illustrations/landing/feature-5.svg',
-          darkImage: '/images/illustrations/landing/feature-5-dark.svg',
-        },
-        {
-          title: 'Extensive Documentation',
-          content: `Vuero's documentation will be a precious ally, as the template has a large codebase, and a lot of files. Read carefully the docs, all you need to know for an optimal development experience is there, even if you still are a beginner.`,
-          image: '/images/illustrations/landing/feature-6.svg',
-          darkImage: '/images/illustrations/landing/feature-6-dark.svg',
-        },
-      ]"
-    >
-      <div class="cta-wrapper">
-        <div class="cta-title">
-          <h3>Exclusively on Envato Market</h3>
-          <a
-            href="http://go.cssninja.io/buy-vuero"
-            class="custom-button"
-          >
-            <img
-              src="/images/icons/logos/envato.svg"
-              alt=""
-            >
-            <span>Get It Now</span>
-          </a>
-        </div>
-      </div>
-    </MarketingSideFeatures>
-  </Layout>
+  </div>
 </template>
 
-<style scoped lang="scss">
-#vuero-demos,
-#vuero-components {
-  scroll-margin-top: 50px;
+<style lang="scss" scoped>
+.modern-login {
+  position: relative;
+  background: var(--white);
+  min-height: 100vh;
+
+  .column {
+    &.is-relative {
+      position: relative;
+    }
+  }
+
+  .hero {
+    &.has-background-image {
+      position: relative;
+
+      .hero-overlay {
+        position: absolute;
+        top: 0;
+        inset-inline-start: 0;
+        width: 100%;
+        height: 100%;
+        background: #5d4298 !important;
+        opacity: 0.6;
+      }
+    }
+  }
+
+  .underlay {
+    display: block;
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    width: 66.6%;
+    height: 100%;
+    background: #fdfdfd;
+    z-index: 0;
+  }
+
+  .top-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    margin-bottom: 5rem;
+
+    .dark-mode {
+      transform: scale(0.6);
+      z-index: 2;
+    }
+
+    .top-logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
+
+      img {
+        display: block;
+        width: 100%;
+        max-width: 50px;
+        margin: 0 auto;
+      }
+
+      .iconify {
+        height: 50px;
+        width: 50px;
+      }
+    }
+  }
+
+  .is-image {
+    position: relative;
+    border-inline-end: 1px solid var(--fade-grey);
+
+    .hero-image {
+      position: relative;
+      z-index: 2;
+      display: block;
+      margin: -80px auto 0;
+      max-width: 60%;
+      width: 60%;
+    }
+  }
+
+  .is-form {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+
+    form {
+      animation: fadeInLeft 0.5s;
+    }
+
+    .form-text {
+      padding: 0 20px;
+      animation: fadeInLeft 0.5s;
+
+      h2 {
+        font-family: var(--font-alt);
+        font-weight: 400;
+        font-size: 2rem;
+        color: var(--primary);
+      }
+
+      p {
+        color: var(--muted-grey);
+        margin-top: 10px;
+      }
+    }
+
+    .recover-text {
+      font-size: 0.9rem;
+      color: var(--dark-text);
+    }
+
+    .login-wrapper {
+      padding: 30px 20px;
+
+      .control {
+        position: relative;
+        width: 100%;
+        margin-top: 16px;
+
+        .input {
+          padding-top: 14px;
+          height: 60px;
+          border-radius: 10px;
+          padding-inline-start: 55px;
+          transition: all 0.3s; // transition-all test
+
+          &:focus {
+            background: color-mix(in oklab, var(--fade-grey), white 6%);
+            border-color: var(--placeholder);
+
+            ~ .auth-label,
+            ~ .autv-icon .iconify {
+              color: var(--muted-grey);
+            }
+          }
+        }
+
+        .error-text {
+          color: var(--danger);
+          font-size: 0.8rem;
+          display: none;
+          padding: 2px 6px;
+        }
+
+        .auth-label {
+          position: absolute;
+          top: 6px;
+          inset-inline-start: 55px;
+          font-size: 0.8rem;
+          color: var(--dark-text);
+          font-weight: 500;
+          z-index: 2;
+          transition: all 0.3s; // transition-all test
+        }
+
+        .autv-icon,
+        :deep(.autv-icon) {
+          position: absolute;
+          top: 0;
+          inset-inline-start: 0;
+          height: 60px;
+          width: 60px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 24px;
+          color: var(--placeholder);
+          transition: all 0.3s;
+        }
+
+        &.has-validation {
+          .validation-icon {
+            position: absolute;
+            top: 0;
+            inset-inline-end: 0;
+            height: 60px;
+            width: 60px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+
+            .icon-wrapper {
+              height: 20px;
+              width: 20px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              border-radius: var(--radius-rounded);
+
+              .iconify {
+                height: 10px;
+                width: 10px;
+                stroke-width: 3px;
+                color: var(--white);
+              }
+            }
+
+            &.is-success {
+              .icon-wrapper {
+                background: var(--success);
+              }
+            }
+
+            &.is-error {
+              .icon-wrapper {
+                background: var(--danger);
+              }
+            }
+          }
+
+          &.has-success {
+            .validation-icon {
+              &.is-success {
+                display: flex;
+              }
+
+              &.is-error {
+                display: none;
+              }
+            }
+          }
+
+          &.has-error {
+            .input {
+              border-color: var(--danger);
+            }
+
+            .error-text {
+              display: block;
+            }
+
+            .validation-icon {
+              &.is-error {
+                display: flex;
+              }
+
+              &.is-success {
+                display: none;
+              }
+            }
+          }
+        }
+
+        &.is-flex {
+          display: flex;
+          align-items: center;
+
+          a {
+            display: block;
+            margin-inline-start: auto;
+            color: var(--muted-grey);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+
+            &:hover,
+            &:focus {
+              color: var(--primary);
+            }
+          }
+
+          .remember-me {
+            font-size: 0.9rem;
+            color: var(--muted-grey);
+            font-weight: 500;
+          }
+        }
+      }
+
+      .button-wrap {
+        margin: 40px 0;
+
+        &.has-help {
+          display: flex;
+          align-items: center;
+
+          > span {
+            margin-inline-start: 12px;
+            font-family: var(--font);
+
+            a {
+              color: var(--primary);
+              font-weight: 500;
+              padding: 0 2px;
+            }
+          }
+        }
+
+        .button {
+          height: 46px;
+          width: 140px;
+          margin-inline-start: 6px;
+
+          &:first-child {
+            &:hover {
+              opacity: 0.8;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.remember-toggle {
+  width: 65px;
+  display: block;
+  position: relative;
+  cursor: pointer;
+  font-size: 22px;
+  user-select: none;
+  transform: scale(0.9);
+
+  input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+
+    &:checked ~ .toggler {
+      border-color: var(--primary);
+
+      .active,
+      .inactive {
+        transform: translateX(calc(var(--transform-direction) * 100%)) rotate(360deg);
+      }
+
+      .active {
+        opacity: 1;
+      }
+
+      .inactive {
+        opacity: 0;
+      }
+    }
+  }
+
+  .toggler {
+    position: relative;
+    display: block;
+    height: 34px;
+    width: 61px;
+    border: 2px solid var(--placeholder);
+    border-radius: 100px;
+    transition: all 0.3s; // transition-all test
+
+    .active,
+    .inactive {
+      position: absolute;
+      top: 2px;
+      inset-inline-start: 2px;
+      height: 26px;
+      width: 26px;
+      border-radius: var(--radius-rounded);
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: translateX(calc(var(--transform-direction) * 0))
+        rotate(calc(var(--transform-direction) * 0));
+      transition: all 0.3s ease;
+
+      .iconify {
+        color: var(--white);
+        font-size: 14px;
+      }
+    }
+
+    .inactive {
+      background: var(--placeholder);
+      border-color: var(--placeholder);
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .active {
+      background: var(--primary);
+      border-color: var(--primary);
+      opacity: 0;
+      z-index: 0;
+    }
+  }
+}
+
+@media only screen and (width <= 767px) {
+  .modern-login {
+    .top-logo {
+      top: 30px;
+    }
+
+    .dark-mode {
+      top: 36px;
+      inset-inline-end: 44px;
+    }
+
+    .is-form {
+      padding-top: 100px;
+    }
+  }
+}
+
+@media only screen and (width >= 768px) and (width <= 1024px) and (orientation: portrait) {
+  .modern-login {
+    .top-logo {
+      .iconify {
+        height: 60px;
+        width: 60px;
+      }
+    }
+
+    .dark-mode {
+      top: -58px;
+      inset-inline-end: 30%;
+    }
+
+    .columns {
+      display: flex;
+      height: 100vh;
+    }
+  }
+}
+
+/* ==========================================================================
+Dark mode
+========================================================================== */
+
+.is-dark {
+  .modern-login {
+    background: var(--dark-sidebar);
+
+    .underlay {
+      background: color-mix(in oklab, var(--dark-sidebar), white 10%);
+    }
+
+    .is-image {
+      border-color: color-mix(in oklab, var(--dark-sidebar), white 10%);
+    }
+
+    .is-form {
+      .form-text {
+        h2 {
+          color: var(--primary);
+        }
+      }
+
+      .login-wrapper {
+        .control {
+          &.is-flex {
+            a:hover {
+              color: var(--primary);
+            }
+          }
+
+          .input {
+            background: color-mix(in oklab, var(--dark-sidebar), white 4%);
+
+            &:focus {
+              border-color: var(--primary);
+
+              ~ .autv-icon {
+                .iconify {
+                  color: var(--primary);
+                }
+              }
+            }
+          }
+
+          .auth-label {
+            color: var(--light-text);
+          }
+        }
+
+        .button-wrap {
+          &.has-help {
+            span {
+              color: var(--light-text);
+
+              a {
+                color: var(--primary);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .remember-toggle {
+    input {
+      &:checked + .toggler {
+        border-color: var(--primary);
+
+        > span {
+          background: var(--primary);
+        }
+      }
+    }
+
+    .toggler {
+      border-color: color-mix(in oklab, var(--dark-sidebar), white 12%);
+
+      > span {
+        background: color-mix(in oklab, var(--dark-sidebar), white 12%);
+      }
+    }
+  }
 }
 </style>

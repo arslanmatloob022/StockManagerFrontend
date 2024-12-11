@@ -110,6 +110,7 @@ declare module 'vue-router/auto-routes' {
     '/error/page-3': RouteRecordInfo<'/error/page-3', '/error/page-3', Record<never, never>, Record<never, never>>,
     '/error/page-4': RouteRecordInfo<'/error/page-4', '/error/page-4', Record<never, never>, Record<never, never>>,
     '/error/page-5': RouteRecordInfo<'/error/page-5', '/error/page-5', Record<never, never>, Record<never, never>>,
+    '/home': RouteRecordInfo<'/home', '/home', Record<never, never>, Record<never, never>>,
     '/inbox': RouteRecordInfo<'/inbox', '/inbox', Record<never, never>, Record<never, never>>,
     '/marketing-1': RouteRecordInfo<'/marketing-1', '/marketing-1', Record<never, never>, Record<never, never>>,
     '/marketing-2': RouteRecordInfo<'/marketing-2', '/marketing-2', Record<never, never>, Record<never, never>>,

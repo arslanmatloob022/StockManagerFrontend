@@ -39,16 +39,16 @@ provide(injectionKey, context)
 // using reactive context for slots, has better dev experience
 const contextRx = reactive(context)
 
-watch(
-  () => route.fullPath,
-  () => {
-    isMobileSideblockOpen.value = false
+// watch(
+//   () => route.fullPath,
+//   () => {
+//     isMobileSideblockOpen.value = false
 
-    if (props.closeOnChange && isDesktopSideblockOpen.value) {
-      isDesktopSideblockOpen.value = false
-    }
-  },
-)
+//     if (props.closeOnChange && isDesktopSideblockOpen.value) {
+//       isDesktopSideblockOpen.value = false
+//     }
+//   },
+// )
 </script>
 
 <template>
