@@ -61,6 +61,7 @@
     "@vueuse/core": "10.9.0",
     "@vueuse/router": "10.9.0",
     "apexcharts": "3.49.0",
+    "axios": "^1.7.9",
     "billboard.js": "3.11.3",
     "bulma": "npm:@cssninja/bulma@0.9.4",
     "compression": "1.7.4",

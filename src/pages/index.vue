@@ -1,53 +1,40 @@
 <script setup lang="ts">
-type StepId = 'login' | 'forgot-password'
-const step = ref<StepId>('login')
-const isLoading = ref(false)
-const router = useRouter()
-const route = useRoute()
-const notyf = useNotyf()
-const token = useUserToken()
-const $fetch = useApiFetch()
-const redirect = route.query.redirect as string
-const controller = new AbortController() // Create an AbortController instance
-const { signal } = controller
+type StepId = "login" | "forgot-password";
+const step = ref<StepId>("login");
+const isLoading = ref(false);
+const api = useApi();
+const router = useRouter();
+const route = useRoute();
+const notyf = useNotyf();
+const token = useUserToken();
+const redirect = route.query.redirect as string;
+const controller = new AbortController(); // Create an AbortController instance
+const { signal } = controller;
 const handleLogin = async () => {
-  if (!isLoading.value) {
-    // isLoading.value = true
-    // const response = await $fetch.raw('/api/users', {
-    //     method: 'POST', 
-    //     body: {
-    //       name: 'John Doe',
-    //       email: 'john.doe@example.com',
-    //     }, 
-    //   })
-    const { _data: resp, headers } = await $fetch.raw(`/api/users`, {
-    query: {
-     
-    },
-    signal
-  })
-  console.log(resp, headers)
-    await sleep(2000)
-    console.log('set token logged-in')
-    token.value = 'logged-in'
-
-    notyf.dismissAll()
-    notyf.primary('Welcome back, Erik Kovalsky')
-
-    if (redirect) {
-      router.push(redirect)
-    }
-    else {
-      router.push('/sidebar/dashboards')
-    }
-
-    isLoading.value = false
+  try {
+    const resp = await api.post("/auth/login/", {
+      email: userData.value.email,
+      password: userData.value.password,
+    });
+    notyf.dismissAll();
+    notyf.primary(`Welcome back, ${resp.data.username}`);
+    router.push("/sidebar/dashboards");
+  } catch (err) {
+    console.log(err);
+    router.push(redirect);
+  } finally {
+    isLoading.value = false;
   }
-}
+};
+
+const userData = ref({
+  email: "",
+  password: "",
+});
 
 useHead({
-  title: 'Auth Login 1 - Vuero',
-})
+  title: "The Stock Manager",
+});
 </script>
 
 <template>
@@ -65,7 +52,7 @@ useHead({
                     class="hero-image"
                     src="/images/illustrations/login/station.svg"
                     alt=""
-                  >
+                  />
                 </div>
               </div>
             </div>
@@ -74,31 +61,19 @@ useHead({
       </div>
       <div class="column is-4 is-relative">
         <div class="top-tools">
-          <RouterLink
-            to="/"
-            class="top-logo"
-          >
-            <AnimatedLogo
-              width="38px"
-              height="38px"
-            />
+          <RouterLink to="/" class="top-logo">
+            <AnimatedLogo width="38px" height="38px" />
           </RouterLink>
 
           <VDarkmodeToggle />
         </div>
         <div class="is-form">
           <div class="is-form-inner">
-            <div
-              class="form-text"
-              :class="[step !== 'login' && 'is-hidden']"
-            >
+            <div class="form-text" :class="[step !== 'login' && 'is-hidden']">
               <h2>Sign In</h2>
               <p>Welcome back to your account.</p>
             </div>
-            <div
-              class="form-text"
-              :class="[step === 'login' && 'is-hidden']"
-            >
+            <div class="form-text" :class="[step === 'login' && 'is-hidden']">
               <h2>Recover Account</h2>
               <p>Reset your account password.</p>
             </div>
@@ -109,7 +84,7 @@ useHead({
               class="login-wrapper"
               @submit.prevent="handleLogin"
             >
-              <VMessage color="primary">
+              <!-- <VMessage color="primary">
                 <div>
                   <strong class="pr-1">email:</strong>
                   <span>john.doe@cssninja.io</span>
@@ -118,26 +93,24 @@ useHead({
                   <strong class="pr-1">password:</strong>
                   <span>ada.lovelace</span>
                 </div>
-              </VMessage>
+              </VMessage> -->
 
               <VField>
                 <VControl icon="lnil lnil-envelope autv-icon">
-                  <VLabel class="auth-label">
-                    Email Address
-                  </VLabel>
+                  <VLabel class="auth-label"> Email Address </VLabel>
                   <VInput
                     type="email"
+                    v-model="userData.email"
                     autocomplete="current-password"
                   />
                 </VControl>
               </VField>
               <VField>
                 <VControl icon="lnil lnil-lock-alt autv-icon">
-                  <VLabel class="auth-label">
-                    Password
-                  </VLabel>
+                  <VLabel class="auth-label"> Password </VLabel>
                   <VInput
                     type="password"
+                    v-model="userData.password"
                     autocomplete="current-password"
                   />
                 </VControl>
@@ -145,34 +118,19 @@ useHead({
 
               <VField>
                 <VControl class="is-flex">
-                  <VLabel
-                    raw
-                    class="remember-toggle"
-                  >
-                    <VInput
-                      raw
-                      type="checkbox"
-                    />
+                  <VLabel raw class="remember-toggle">
+                    <VInput raw type="checkbox" />
 
                     <span class="toggler">
                       <span class="active">
-                        <VIcon
-                          icon="lucide:check"
-                        />
+                        <VIcon icon="lucide:check" />
                       </span>
                       <span class="inactive">
-                        <VIcon
-                          icon="lucide:circle"
-                        />
+                        <VIcon icon="lucide:circle" />
                       </span>
                     </span>
                   </VLabel>
-                  <VLabel
-                    raw
-                    class="remember-me"
-                  >
-                    Remember Me
-                  </VLabel>
+                  <VLabel raw class="remember-me"> Remember Me </VLabel>
                   <a
                     tabindex="0"
                     role="button"
@@ -213,19 +171,15 @@ useHead({
               @submit.prevent
             >
               <p class="recover-text">
-                Enter your email and click on the confirm button to reset your password.
-                We'll send you an email detailing the steps to complete the procedure.
+                Enter your email and click on the confirm button to reset your
+                password. We'll send you an email detailing the steps to
+                complete the procedure.
               </p>
 
               <VField>
                 <VControl icon="lnil lnil-envelope autv-icon">
-                  <VLabel class="auth-label">
-                    Email Address
-                  </VLabel>
-                  <VInput
-                    type="email"
-                    autocomplete="current-password"
-                  />
+                  <VLabel class="auth-label"> Email Address </VLabel>
+                  <VInput type="email" autocomplete="current-password" />
                 </VControl>
               </VField>
               <div class="button-wrap">
@@ -588,7 +542,8 @@ useHead({
 
       .active,
       .inactive {
-        transform: translateX(calc(var(--transform-direction) * 100%)) rotate(360deg);
+        transform: translateX(calc(var(--transform-direction) * 100%))
+          rotate(360deg);
       }
 
       .active {
