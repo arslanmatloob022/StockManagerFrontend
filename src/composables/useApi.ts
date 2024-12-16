@@ -15,7 +15,7 @@ function createApi(): CustomAxiosInstance {
   const router = useRouter();
   const notyf = useNotyf();
   const axiosInstance = axios.create({
-    baseURL: "https://stcok-manager-backend.vercel.app/",
+    baseURL: "https://stcok-manager-backend.vercel.app/api/",
     headers: {
       Accept: "application/json",
       "Content-Type": "multipart/form-data",
