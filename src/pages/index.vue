@@ -10,8 +10,14 @@ const token = useUserToken();
 const redirect = route.query.redirect as string;
 const controller = new AbortController(); // Create an AbortController instance
 const { signal } = controller;
+const userData = ref({
+  email: "",
+  password: "",
+});
+
 const handleLogin = async () => {
   try {
+    isLoading.value = true;
     const resp = await api.post("/auth/login/", {
       email: userData.value.email,
       password: userData.value.password,
@@ -26,11 +32,6 @@ const handleLogin = async () => {
     isLoading.value = false;
   }
 };
-
-const userData = ref({
-  email: "",
-  password: "",
-});
 
 useHead({
   title: "The Stock Manager",

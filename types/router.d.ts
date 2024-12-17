@@ -54,6 +54,7 @@ declare module 'vue-router/auto-routes' {
     '/components/collapse': RouteRecordInfo<'/components/collapse', '/components/collapse', Record<never, never>, Record<never, never>>,
     '/components/colors': RouteRecordInfo<'/components/colors', '/components/colors', Record<never, never>, Record<never, never>>,
     '/components/content': RouteRecordInfo<'/components/content', '/components/content', Record<never, never>, Record<never, never>>,
+    '/components/DashboardComponent/MainDashboard': RouteRecordInfo<'/components/DashboardComponent/MainDashboard', '/components/DashboardComponent/MainDashboard', Record<never, never>, Record<never, never>>,
     '/components/dropdown': RouteRecordInfo<'/components/dropdown', '/components/dropdown', Record<never, never>, Record<never, never>>,
     '/components/flex': RouteRecordInfo<'/components/flex', '/components/flex', Record<never, never>, Record<never, never>>,
     '/components/flextable/': RouteRecordInfo<'/components/flextable/', '/components/flextable', Record<never, never>, Record<never, never>>,
