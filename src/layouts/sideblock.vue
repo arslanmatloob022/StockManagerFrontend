@@ -1,196 +1,202 @@
 <script setup lang="ts">
-import type { SideblockItem } from '/@src/components/layouts/sideblock/sideblock.types'
+import type { SideblockItem } from "/@src/components/layouts/sideblock/sideblock.types";
 
 const links = ref<SideblockItem[]>([
   {
-    type: 'link',
-    label: 'Dashboard',
-    icon: 'lucide:grid',
-    to: '/sidebar/dashboards',
+    type: "link",
+    label: "Dashboard",
+    icon: "lucide:grid",
+    to: "/sidebar/dashboards",
   },
   {
-    type: 'link',
-    label: 'Projects',
-    icon: 'lucide:briefcase',
-    to: '/sidebar/dashboards/personal-2',
+    type: "link",
+    label: "Manage Stock",
+    icon: "lucide:briefcase",
+    to: "/sidebar/dashboards/stock",
   },
   {
-    type: 'link',
-    label: 'Messages',
-    icon: 'lucide:message-circle',
+    type: "link",
+    label: "Manage Orders",
+    icon: "lucide:message-circle",
     badge: 3,
-    to: '/sidebar/dashboards/human-ressources',
+    to: "/sidebar/dashboards/orders",
   },
   {
-    type: 'link',
-    label: 'Collections',
-    icon: 'lucide:book',
-    to: '/sidebar/dashboards/personal-3',
+    type: "link",
+    label: "Accounts",
+    icon: "lucide:book",
+    to: "/sidebar/dashboards/accounts",
   },
   {
-    type: 'link',
-    label: 'Users',
-    icon: 'lucide:users',
-    to: '/sidebar/layouts/profile-view',
+    type: "link",
+    label: "Users",
+    icon: "lucide:users",
+    to: "/sidebar/dashboards/users",
   },
   {
-    type: 'collapse',
-    label: 'Reports',
-    id: 'reports',
-    icon: 'lucide:briefcase',
-    children: [
-      {
-        to: '/sidebar/dashboards/analytics',
-        label: 'Financial report',
-        icon: 'lnil lnil-analytics-alt-1',
-      },
-      {
-        to: '/sidebar/dashboards/company',
-        label: 'Stocks report',
-        icon: 'lnil lnil-pie-chart',
-      },
-      {
-        to: '/sidebar/layouts/list-view-3',
-        label: 'Growth report',
-        icon: 'lnil lnil-stats-up',
-      },
-    ],
+    type: "link",
+    label: "Stores",
+    icon: "lucide:building",
+    to: "/sidebar/dashboards/stores",
   },
-  {
-    type: 'divider',
-  },
-  {
-    type: 'collapse',
-    id: 'settings',
-    label: 'Settings',
-    icon: 'lucide:settings',
-    children: [
-      {
-        to: '/sidebar/layouts',
-        label: 'General',
-        icon: 'lnil lnil-home',
-      },
-      {
-        to: '/sidebar/dashboards/stocks',
-        label: 'Security',
-        icon: 'lnil lnil-lock-alt',
-      },
-      {
-        to: '/sidebar/dashboards/sales',
-        label: 'Transactions',
-        icon: 'lnil lnil-coin',
-      },
-    ],
-  },
-  {
-    type: 'collapse',
-    id: 'starters',
-    label: 'Starters',
-    icon: 'lucide:zap',
-    children: [
-      {
-        to: '/starters/sidebar-blank-page-1',
-        label: 'Regular Sidebar',
-        icon: 'lnil lnil-layout',
-      },
-      {
-        to: '/starters/sidebar-blank-page-2',
-        label: 'Curved Sidebar',
-        icon: 'lnil lnil-layout',
-      },
-      {
-        to: '/starters/sidebar-blank-page-3',
-        label: 'Colored Sidebar',
-        icon: 'lnil lnil-layout',
-      },
-      {
-        to: '/starters/sidebar-blank-page-4',
-        label: 'Curved Colored',
-        icon: 'lnil lnil-layout',
-      },
-      {
-        to: '/starters/sidebar-blank-page-4',
-        label: 'Curved Colored Sidebar',
-        icon: 'lnil lnil-layout',
-      },
-      {
-        to: '/starters/sidebar-blank-page-5',
-        label: 'Labels Sidebar',
-        icon: 'lnil lnil-layout',
-      },
-      {
-        to: '/starters/sidebar-blank-page-6',
-        label: 'Labels Hover Sidebar',
-        icon: 'lnil lnil-layout',
-      },
-      {
-        to: '/starters/sidebar-blank-page-7',
-        label: 'Float Sidebar',
-        icon: 'lnil lnil-layout',
-      },
-      {
-        to: '/starters/sideblock-blank-page-1',
-        label: 'Regular Sideblock',
-        icon: 'lnil lnil-layout',
-      },
-      {
-        to: '/starters/sideblock-blank-page-2',
-        label: 'Curved Sideblock',
-        icon: 'lnil lnil-layout',
-      },
-      {
-        to: '/starters/sideblock-blank-page-3',
-        label: 'Colored Sideblock',
-        icon: 'lnil lnil-layout',
-      },
-      {
-        to: '/starters/sideblock-blank-page-4',
-        label: 'Curved Colored',
-        icon: 'lnil lnil-layout',
-      },
-      {
-        to: '/starters/navbar-blank-page-1',
-        label: 'Regular Navbar',
-        icon: 'lnil lnil-layout-alt',
-      },
-      {
-        to: '/starters/navbar-blank-page-2',
-        label: 'Fading Navbar',
-        icon: 'lnil lnil-layout-alt',
-      },
-      {
-        to: '/starters/navbar-blank-page-3',
-        label: 'Colored Navbar',
-        icon: 'lnil lnil-layout-alt',
-      },
-      {
-        to: '/starters/navbar-blank-page-4',
-        label: 'Dropdown Navbar',
-        icon: 'lnil lnil-layout-alt',
-      },
-      {
-        to: '/starters/navbar-blank-page-5',
-        label: 'Colored Dropdown',
-        icon: 'lnil lnil-layout-alt',
-      },
-      {
-        to: '/starters/navbar-blank-page-6',
-        label: 'Clean Navbar',
-        icon: 'lnil lnil-layout-alt',
-      },
-      {
-        to: '/starters/navbar-blank-page-7',
-        label: 'Clean Center Navbar',
-        icon: 'lnil lnil-layout-alt',
-      },
-      {
-        to: '/starters/navbar-blank-page-8',
-        label: 'Clean Fade Navbar',
-        icon: 'lnil lnil-layout-alt',
-      },
-    ],
-  },
-])
+  // {
+  //   type: "collapse",
+  //   label: "Reports",
+  //   id: "reports",
+  //   icon: "lucide:briefcase",
+  //   children: [
+  //     {
+  //       to: "/sidebar/dashboards/analytics",
+  //       label: "Financial report",
+  //       icon: "lnil lnil-analytics-alt-1",
+  //     },
+  //     {
+  //       to: "/sidebar/dashboards/company",
+  //       label: "Stocks report",
+  //       icon: "lnil lnil-pie-chart",
+  //     },
+  //     {
+  //       to: "/sidebar/layouts/list-view-3",
+  //       label: "Growth report",
+  //       icon: "lnil lnil-stats-up",
+  //     },
+  //   ],
+  // },
+  // {
+  //   type: "divider",
+  // },
+  // {
+  //   type: "collapse",
+  //   id: "settings",
+  //   label: "Settings",
+  //   icon: "lucide:settings",
+  //   children: [
+  //     {
+  //       to: "/sidebar/layouts",
+  //       label: "General",
+  //       icon: "lnil lnil-home",
+  //     },
+  //     {
+  //       to: "/sidebar/dashboards/stocks",
+  //       label: "Security",
+  //       icon: "lnil lnil-lock-alt",
+  //     },
+  //     {
+  //       to: "/sidebar/dashboards/sales",
+  //       label: "Transactions",
+  //       icon: "lnil lnil-coin",
+  //     },
+  //   ],
+  // },
+  // {
+  //   type: "collapse",
+  //   id: "starters",
+  //   label: "Starters",
+  //   icon: "lucide:zap",
+  //   children: [
+  //     {
+  //       to: "/starters/sidebar-blank-page-1",
+  //       label: "Regular Sidebar",
+  //       icon: "lnil lnil-layout",
+  //     },
+  //     {
+  //       to: "/starters/sidebar-blank-page-2",
+  //       label: "Curved Sidebar",
+  //       icon: "lnil lnil-layout",
+  //     },
+  //     {
+  //       to: "/starters/sidebar-blank-page-3",
+  //       label: "Colored Sidebar",
+  //       icon: "lnil lnil-layout",
+  //     },
+  //     {
+  //       to: "/starters/sidebar-blank-page-4",
+  //       label: "Curved Colored",
+  //       icon: "lnil lnil-layout",
+  //     },
+  //     {
+  //       to: "/starters/sidebar-blank-page-4",
+  //       label: "Curved Colored Sidebar",
+  //       icon: "lnil lnil-layout",
+  //     },
+  //     {
+  //       to: "/starters/sidebar-blank-page-5",
+  //       label: "Labels Sidebar",
+  //       icon: "lnil lnil-layout",
+  //     },
+  //     {
+  //       to: "/starters/sidebar-blank-page-6",
+  //       label: "Labels Hover Sidebar",
+  //       icon: "lnil lnil-layout",
+  //     },
+  //     {
+  //       to: "/starters/sidebar-blank-page-7",
+  //       label: "Float Sidebar",
+  //       icon: "lnil lnil-layout",
+  //     },
+  //     {
+  //       to: "/starters/sideblock-blank-page-1",
+  //       label: "Regular Sideblock",
+  //       icon: "lnil lnil-layout",
+  //     },
+  //     {
+  //       to: "/starters/sideblock-blank-page-2",
+  //       label: "Curved Sideblock",
+  //       icon: "lnil lnil-layout",
+  //     },
+  //     {
+  //       to: "/starters/sideblock-blank-page-3",
+  //       label: "Colored Sideblock",
+  //       icon: "lnil lnil-layout",
+  //     },
+  //     {
+  //       to: "/starters/sideblock-blank-page-4",
+  //       label: "Curved Colored",
+  //       icon: "lnil lnil-layout",
+  //     },
+  //     {
+  //       to: "/starters/navbar-blank-page-1",
+  //       label: "Regular Navbar",
+  //       icon: "lnil lnil-layout-alt",
+  //     },
+  //     {
+  //       to: "/starters/navbar-blank-page-2",
+  //       label: "Fading Navbar",
+  //       icon: "lnil lnil-layout-alt",
+  //     },
+  //     {
+  //       to: "/starters/navbar-blank-page-3",
+  //       label: "Colored Navbar",
+  //       icon: "lnil lnil-layout-alt",
+  //     },
+  //     {
+  //       to: "/starters/navbar-blank-page-4",
+  //       label: "Dropdown Navbar",
+  //       icon: "lnil lnil-layout-alt",
+  //     },
+  //     {
+  //       to: "/starters/navbar-blank-page-5",
+  //       label: "Colored Dropdown",
+  //       icon: "lnil lnil-layout-alt",
+  //     },
+  //     {
+  //       to: "/starters/navbar-blank-page-6",
+  //       label: "Clean Navbar",
+  //       icon: "lnil lnil-layout-alt",
+  //     },
+  //     {
+  //       to: "/starters/navbar-blank-page-7",
+  //       label: "Clean Center Navbar",
+  //       icon: "lnil lnil-layout-alt",
+  //     },
+  //     {
+  //       to: "/starters/navbar-blank-page-8",
+  //       label: "Clean Fade Navbar",
+  //       icon: "lnil lnil-layout-alt",
+  //     },
+  //   ],
+  // },
+]);
 </script>
 
 <template>
@@ -205,9 +211,7 @@ const links = ref<SideblockItem[]>([
         <AnimatedLogo width="36px" />
       </RouterLink>
 
-      <h3 class="is-hidden-mobile ml-2">
-        Vuero
-      </h3>
+      <h3 class="is-hidden-mobile ml-2">Vuero</h3>
     </template>
 
     <template #toolbar>
