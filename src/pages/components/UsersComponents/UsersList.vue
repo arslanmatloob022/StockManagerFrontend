@@ -2,6 +2,7 @@
 import type { VTagColor } from "/@src/components/base/VTag.vue";
 import type { VAvatarProps } from "/@src/components/base/VAvatar.vue";
 import * as listData from "/@src/data/layouts/view-list-v1";
+import AddUpdateUser from "./AddUpdateUser.vue";
 
 export interface UserData extends VAvatarProps {
   name: string;
@@ -19,6 +20,17 @@ export interface UserData extends VAvatarProps {
   };
   teams: VAvatarProps[];
 }
+const openUserModal = ref(false);
+
+const closeUserModal = () => {
+  openUserModal.value = false;
+};
+
+const openUserModalHandler = () => {
+  openUserModal.value = true;
+};
+
+const getUsersList = () => {};
 
 const users = listData.users as UserData[];
 
@@ -57,8 +69,13 @@ const filteredData = computed(() => {
       </div>
 
       <div class="buttons">
-        <VButton color="primary" icon="fas fa-check" elevated>
-          Approve
+        <VButton
+          @click="openUserModalHandler"
+          color="primary"
+          icon="fas fa-plus"
+          elevated
+        >
+          New User
         </VButton>
       </div>
     </div>
@@ -158,6 +175,12 @@ const filteredData = computed(() => {
       :max-links-displayed="5"
     />
   </div>
+  <AddUpdateUser
+    v-if="openUserModal"
+    :openUserModal="openUserModal"
+    @update:close-modal-handler="closeUserModal"
+    @update:call-on-success="getUsersList"
+  />
 </template>
 
 <style lang="scss">

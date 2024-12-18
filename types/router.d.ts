@@ -108,6 +108,7 @@ declare module 'vue-router/auto-routes' {
     '/components/tabs': RouteRecordInfo<'/components/tabs', '/components/tabs', Record<never, never>, Record<never, never>>,
     '/components/tag': RouteRecordInfo<'/components/tag', '/components/tag', Record<never, never>, Record<never, never>>,
     '/components/tooltip': RouteRecordInfo<'/components/tooltip', '/components/tooltip', Record<never, never>, Record<never, never>>,
+    '/components/UsersComponents/AddUpdateUser': RouteRecordInfo<'/components/UsersComponents/AddUpdateUser', '/components/UsersComponents/AddUpdateUser', Record<never, never>, Record<never, never>>,
     '/components/UsersComponents/UsersList': RouteRecordInfo<'/components/UsersComponents/UsersList', '/components/UsersComponents/UsersList', Record<never, never>, Record<never, never>>,
     '/error': RouteRecordInfo<'/error', '/error', Record<never, never>, Record<never, never>>,
     '/error/page-1': RouteRecordInfo<'/error/page-1', '/error/page-1', Record<never, never>, Record<never, never>>,
