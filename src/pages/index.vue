@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useUserSession } from "../stores/userSession";
 type StepId = "login" | "forgot-password";
 const step = ref<StepId>("login");
 const isLoading = ref(false);
@@ -10,6 +11,7 @@ const token = useUserToken();
 const redirect = route.query.redirect as string;
 const controller = new AbortController(); // Create an AbortController instance
 const { signal } = controller;
+const userSession = useUserSession();
 const userData = ref({
   email: "",
   password: "",
@@ -22,8 +24,10 @@ const handleLogin = async () => {
       email: userData.value.email,
       password: userData.value.password,
     });
+    userSession.setUser(resp.data.user);
+    userSession.setToken(resp.data.access);
     notyf.dismissAll();
-    notyf.primary(`Welcome back, ${resp.data.username}`);
+    notyf.primary(`Welcome back, ${resp.data.user.username}`);
     router.push("/sidebar/dashboards");
   } catch (err) {
     console.log(err);

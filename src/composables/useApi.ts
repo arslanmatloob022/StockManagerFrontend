@@ -23,7 +23,9 @@ function createApi(): CustomAxiosInstance {
   });
 
   axiosInstance.interceptors.request.use((config) => {
-    config.headers.Authorization = `Token ${userSession.token}`;
+    if (userSession.token) {
+      config.headers.Authorization = `Bearer ${userSession.token}`;
+    }
     return config;
   });
 
@@ -32,7 +34,7 @@ function createApi(): CustomAxiosInstance {
     (error: AxiosError) => {
       if (error.response?.status === 401 || error.response?.status === 403) {
         userSession.logoutUser();
-        router.push("/auth/login");
+        router.push("/");
       }
       notyf.error("Unauthorized Request !");
       return Promise.reject(error);

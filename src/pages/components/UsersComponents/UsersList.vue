@@ -178,8 +178,8 @@ const filteredData = computed(() => {
   <AddUpdateUser
     v-if="openUserModal"
     :openUserModal="openUserModal"
-    @update:close-modal-handler="closeUserModal"
-    @update:call-on-success="getUsersList"
+    @update:closeModalHandler="closeUserModal"
+    @update:callOnSuccess="getUsersList"
   />
 </template>
 

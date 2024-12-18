@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useApi } from "/@src/composables/useApi";
 import { useNotyf } from "/@src/composables/notyf";
+import { convertToFormData } from "/@src/commonScripts/commonComponents";
 
 const notyf = useNotyf();
 const api = useApi();
-
+const loading = ref(false);
 const props = withDefaults(
   defineProps<{
     openUserModal?: boolean;
@@ -25,13 +26,6 @@ const closeModalHandler = () => {
 
 const callOnSuccessHandler = () => {
   emits("update:callOnSuccess", null);
-};
-
-const addUpdateUserHandler = () => {
-  try {
-  } catch (err) {
-    console.log(err);
-  }
 };
 
 interface UserData {
@@ -68,6 +62,22 @@ const userRoles = ref([
   { value: "distributer", label: "Distributer" },
   { value: "retailer", label: "Retailer" },
 ]);
+
+const addUpdateUserHandler = async () => {
+  try {
+    loading.value = true;
+    const resp = await api.post(
+      "/user/",
+      convertToFormData(userDataModel.value, "")
+    );
+    closeModalHandler();
+    notyf.success("User added successfully");
+  } catch (err) {
+    console.log(err);
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <template>
@@ -162,7 +172,9 @@ const userRoles = ref([
         </VField>
       </div>
     </template>
-    <template #action> </template>
+    <template #action>
+      <VButton type="submit" color="primary">Add User</VButton>
+    </template>
     <template #cancel> </template>
   </VModal>
 </template>
