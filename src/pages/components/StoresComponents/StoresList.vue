@@ -1,42 +1,73 @@
 <script setup lang="ts">
-import type {
-  VAvatarProps,
-  VAvatarColor,
-} from "/@src/components/base/VAvatar.vue";
-import { projects } from "/@src/data/layouts/card-grid-v3";
+import { ref, computed, onMounted } from "vue";
+import { useApi } from "/@src/composables/useApi";
+import { useNotyf } from "/@src/composables/notyf";
+import StoreModal from "./StoreModal.vue";
+
+const notyf = useNotyf();
+const api = useApi();
 
 const filters = ref("");
+const modalOpen = ref(false); // Control the modal visibility
+const selectedProject = ref<any>(null); // Store the current store for editing or adding
+const storeList = ref([]); // Holds data from the API
 
-const filteredData = computed(() => {
-  if (!filters.value) {
-    return projects;
-  } else {
-    return projects.filter((item) => {
-      return (
-        item.name.match(new RegExp(filters.value, "i")) ||
-        item.remaining.match(new RegExp(filters.value, "i"))
-      );
-    });
+// Fetch the store list from the API
+const fetchStoreList = async () => {
+  try {
+    const response = await api.get("/store/"); // Adjust the endpoint if needed
+    storeList.value = response.data;
+  } catch (error) {
+    console.error("Error fetching stores:", error);
   }
+};
+
+// Call the API on component mount
+onMounted(() => {
+  // fetchStoreList();
 });
 
-const valueSingle = ref(0);
-const optionsSingle = [
-  "All Projects",
-  "Web Apps",
-  "Mobile Apps",
-  "Dashboards",
-  "Landing Pages",
-];
+// Open modal to add a new store
+const openAddModal = () => {
+  selectedProject.value = null; // Clear selected store for adding
+  modalOpen.value = true;
+  console.log("hd",modalOpen.value)
+};
 
-function getAvatarData(user: any): VAvatarProps {
-  return {
-    picture: user?.picture,
-    initials: user?.initials,
-    color: user?.color as VAvatarColor,
-  };
-}
+// Open modal to edit an existing store
+const openEditModal = (store: any) => {
+  selectedProject.value = { ...store }; // Populate selected store for editing
+  modalOpen.value = true;
+};
+
+// Update the store list after saving changes
+const updateStoreList = (updatedStore: any) => {
+  if (updatedStore.id) {
+    // Update existing store
+    const index = storeList.value.findIndex((s) => s.id === updatedStore.id);
+    if (index !== -1) {
+      storeList.value[index] = updatedStore;
+    }
+  } else {
+    // Add new store
+    updatedStore.id = Date.now(); // Temporary ID
+    storeList.value.push(updatedStore);
+  }
+};
+
+// Filtered data based on search input
+const filteredData = computed(() => {
+  if (!filters.value) {
+    return storeList.value;
+  } else {
+    return storeList.value.filter((item) =>
+      item.name.match(new RegExp(filters.value, "i")) ||
+      item.email.match(new RegExp(filters.value, "i"))
+    );
+  }
+});
 </script>
+
 
 <template>
   <div>
@@ -45,38 +76,24 @@ function getAvatarData(user: any): VAvatarProps {
         <input
           v-model="filters"
           class="input custom-text-filter"
-          placeholder="Search..."
+          placeholder="Search stores..."
         />
       </VControl>
-
       <div class="buttons">
-        <VField class="h-hidden-mobile">
-          <VControl>
-            <Multiselect
-              v-model="valueSingle"
-              :options="optionsSingle"
-              :max-height="145"
-              placeholder="Select an option"
-            />
-          </VControl>
-        </VField>
-        <VButton color="primary" raised>
+        <VButton color="primary" raised @click="openAddModal">
           <span class="icon">
             <i aria-hidden="true" class="fas fa-plus" />
           </span>
-          <span>New Project</span>
+          <span>New Store</span>
         </VButton>
       </div>
     </div>
 
     <div class="card-grid card-grid-v3">
-      <!--List Empty Search Placeholder -->
       <VPlaceholderPage
         :class="[filteredData.length !== 0 && 'is-hidden']"
-        title="We couldn't find any matching results."
-        subtitle="Too bad. Looks like we couldn't find any matching results for the
-          search terms you've entered. Please try different search terms or
-          criteria."
+        title="No matching stores found."
+        subtitle="Try different search terms or criteria."
         larger
       >
         <template #image>
@@ -93,47 +110,16 @@ function getAvatarData(user: any): VAvatarProps {
         </template>
       </VPlaceholderPage>
 
-      <!--Card Grid v3-->
       <TransitionGroup
         name="list"
         tag="div"
         class="columns is-multiline is-flex-tablet-p is-half-tablet-p"
       >
-        <!--Grid Item-->
-        <div v-for="item in filteredData" :key="item.id" class="column is-4">
+        <div v-for="store in filteredData" :key="store.id" class="column is-4">
           <div class="card-grid-item">
-            <label v-if="item.lockable" class="h-toggle">
-              <input type="checkbox" :checked="item.locked" />
-              <span class="toggler">
-                <span class="active">
-                  <VIcon icon="lucide:lock" />
-                </span>
-                <span class="inactive">
-                  <VIcon icon="lucide:check" />
-                </span>
-              </span>
-            </label>
-            <VAvatar
-              size="large"
-              :picture="item.image"
-              :badge="item.badge"
-              squared
-            />
-            <h3 class="dark-inverted">
-              {{ item.name }}
-            </h3>
-            <p>{{ item.remaining }} remaining</p>
-            <div class="description">
-              <p>{{ item.description }}</p>
-            </div>
-            <div class="people">
-              <VAvatar
-                v-for="user in item.team"
-                :key="user.id"
-                size="small"
-                v-bind="getAvatarData(user)"
-              />
-            </div>
+            <VAvatar size="large" :picture="store.logo" squared />
+            <h3 class="dark-inverted">{{ store.name }}</h3>
+            <p>{{ store.email }}</p>
             <div class="buttons">
               <button class="button v-button is-dark-outlined">
                 <span class="icon">
@@ -141,7 +127,10 @@ function getAvatarData(user: any): VAvatarProps {
                 </span>
                 <span>View</span>
               </button>
-              <button class="button v-button is-dark-outlined">
+              <button
+                class="button v-button is-dark-outlined"
+                @click="openEditModal(store)"
+              >
                 <span class="icon">
                   <VIcon icon="lucide:edit-2" />
                 </span>
@@ -152,8 +141,28 @@ function getAvatarData(user: any): VAvatarProps {
         </div>
       </TransitionGroup>
     </div>
+
+    <!-- Modal Component -->
+    <!-- <StoreModal 
+    v-if="modalOpen"
+      :modalOpen="modalOpen"
+      :project="selectedProject"
+      @close="()=>{modalOpen = false}"
+      @save="updateStoreList"
+    /> -->
+
+    <StoreModal 
+    :modalOpen="modalOpen"
+      :project="selectedProject"
+      @close="()=>{modalOpen = false}"
+      @save="updateStoreList"
+    />
+
+    
   </div>
+
 </template>
+
 
 <style lang="scss">
 @import "/@src/scss/abstracts/all";
