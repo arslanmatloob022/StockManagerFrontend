@@ -1,16 +1,24 @@
 <script setup lang="ts">
+import { useApi } from "/@src/composables/useApi";
+import { useNotyf } from "/@src/composables/notyf";
+import StoreModal from "./StoreModal.vue";
 
+const notyf = useNotyf();
+const api = useApi();
 const props = defineProps<{
   modalOpen: boolean;
-  project: { name: string; email: string; logo: string } | null;
+  project: {  name:string, owner_name:string, phone_number:string,address:string,id:string  } | null;
 }>();
 
 const emit = defineEmits(["close", "save"]);
 
 const localStore = ref({
+  id:"",
   name: "",
-  email: "",
-  logo: "",
+  owner_name:"",
+  phone_number:"",
+  address:"",
+  
 });
 
 // Sync props.project with localStore when the modal opens
@@ -20,16 +28,28 @@ watch(
     if (newProject) {
       localStore.value = { ...newProject };
     } else {
-      localStore.value = { name: "", email: "", logo: "" };
+      localStore.value = { name: "", owner_name: "", phone_number: "",address:"",id:"" };
     }
   },
   { immediate: true }
 );
 
-const saveStore = () => {
-  emit("save", { ...localStore.value });
-  emit("close");
+const saveStore = async () => {
+  try {
+    const method = localStore.value.id ? "patch" : "post";
+    const url = localStore.value.id 
+      ? `/store/${localStore.value.id}/` 
+      : "/store/";
+
+    await api[method](url, localStore.value);
+
+    emit("save", { ...localStore.value });
+    emit("close");
+  } catch (error) {
+    console.error("Error saving store:", error);
+  }
 };
+
 
 const closeModal = () => {
   emit("close");
@@ -41,42 +61,64 @@ onMounted(() => {
 
 <template>
     
-  <VModal title="test" :open="props.modalOpen"  @close="closeModal">
-    <template #content>
-      <div class="field">
-        <label class="label">Store Name</label>
-        <div class="control">
-          <input
-            class="input"
-            v-model="localStore.name"
-            placeholder="Enter store name"
-          />
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Email</label>
-        <div class="control">
-          <input
-            class="input"
-            v-model="localStore.email"
-            placeholder="Enter email"
-          />
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Logo URL</label>
-        <div class="control">
-          <input
-            class="input"
-            v-model="localStore.logo"
-            placeholder="Enter logo URL"
-          />
-        </div>
-      </div>
-    </template>
-    <template #action>
-      <VButton color="primary" raised @click="saveStore">Save</VButton>
-      <VButton color="dark" outlined @click="closeModal">Cancel</VButton>
-    </template>
-  </VModal>
+    <VModal 
+  is="form" 
+  @submit.prevent="saveStore" 
+  :title="localStore.id ? 'Edit Store' : 'Add Store'" 
+  :rounded="true" 
+  :open="props.modalOpen" 
+  size="medium"  
+  @close="closeModal"
+>
+  <template #content>
+    <VField>
+      <VLabel>Store Name*</VLabel>
+      <VControl>
+        <VInput required
+          v-model="localStore.name"
+          type="text"
+          placeholder="Enter store name"
+        />
+      </VControl>
+    </VField>
+
+    <VField>
+      <VLabel>Owner Name*</VLabel>
+      <VControl>
+        <VInput required
+          v-model="localStore.owner_name"
+          type="text"
+          placeholder="Enter owner name"
+        />
+      </VControl>
+    </VField>
+
+    <VField>
+      <VLabel>Phone Number</VLabel>
+      <VControl>
+        <VInput
+          v-model="localStore.phone_number"
+          type="tel"
+          placeholder="Enter phone number"
+        />
+      </VControl>
+    </VField>
+
+    <VField>
+      <VLabel>Store Address*</VLabel>
+      <VControl>
+        <VInput required
+          v-model="localStore.address"
+          type="text"
+          placeholder="Enter address"
+        />
+      </VControl>
+    </VField>
+  </template>
+
+  <template #action>
+    <VButton color="primary" raised type="submit">Save</VButton>
+  </template>
+</VModal>
+
 </template>

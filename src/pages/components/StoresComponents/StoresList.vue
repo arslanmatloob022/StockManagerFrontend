@@ -1,71 +1,18 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { useApi } from "/@src/composables/useApi";
-import { useNotyf } from "/@src/composables/notyf";
+import { useStoreManagement } from '/@src/composables/StoreManagement';
 import StoreModal from "./StoreModal.vue";
 
-const notyf = useNotyf();
-const api = useApi();
-
-const filters = ref("");
-const modalOpen = ref(false); // Control the modal visibility
-const selectedProject = ref<any>(null); // Store the current store for editing or adding
-const storeList = ref([]); // Holds data from the API
-
-// Fetch the store list from the API
-const fetchStoreList = async () => {
-  try {
-    const response = await api.get("/store/"); // Adjust the endpoint if needed
-    storeList.value = response.data;
-  } catch (error) {
-    console.error("Error fetching stores:", error);
-  }
-};
-
-// Call the API on component mount
-onMounted(() => {
-  // fetchStoreList();
-});
-
-// Open modal to add a new store
-const openAddModal = () => {
-  selectedProject.value = null; // Clear selected store for adding
-  modalOpen.value = true;
-  console.log("hd",modalOpen.value)
-};
-
-// Open modal to edit an existing store
-const openEditModal = (store: any) => {
-  selectedProject.value = { ...store }; // Populate selected store for editing
-  modalOpen.value = true;
-};
-
-// Update the store list after saving changes
-const updateStoreList = (updatedStore: any) => {
-  if (updatedStore.id) {
-    // Update existing store
-    const index = storeList.value.findIndex((s) => s.id === updatedStore.id);
-    if (index !== -1) {
-      storeList.value[index] = updatedStore;
-    }
-  } else {
-    // Add new store
-    updatedStore.id = Date.now(); // Temporary ID
-    storeList.value.push(updatedStore);
-  }
-};
-
-// Filtered data based on search input
-const filteredData = computed(() => {
-  if (!filters.value) {
-    return storeList.value;
-  } else {
-    return storeList.value.filter((item) =>
-      item.name.match(new RegExp(filters.value, "i")) ||
-      item.email.match(new RegExp(filters.value, "i"))
-    );
-  }
-});
+const {
+  filters,
+  modalOpen,
+  selectedProject,
+  storeList,
+  fetchStoreList,
+  openAddModal,
+  openEditModal,
+  filteredData,
+  DeleteStore,
+} = useStoreManagement();
 </script>
 
 
@@ -117,45 +64,39 @@ const filteredData = computed(() => {
       >
         <div v-for="store in filteredData" :key="store.id" class="column is-4">
           <div class="card-grid-item">
-            <VAvatar size="large" :picture="store.logo" squared />
-            <h3 class="dark-inverted">{{ store.name }}</h3>
-            <p>{{ store.email }}</p>
-            <div class="buttons">
-              <button class="button v-button is-dark-outlined">
-                <span class="icon">
-                  <VIcon icon="lucide:eye" />
-                </span>
-                <span>View</span>
-              </button>
-              <button
-                class="button v-button is-dark-outlined"
+            <h3 class="dark-inverted">{{ store?.name }}</h3>
+            <p>Owner: {{ store?.owner_name }}</p>
+            <div class=" mt-5">
+              <VButton class="" color="info" rounded size="small">
+               
+                View
+              </VButton>
+              <VButton
+                class="ml-2" color="primary" rounded size="small"
                 @click="openEditModal(store)"
               >
-                <span class="icon">
-                  <VIcon icon="lucide:edit-2" />
-                </span>
+               
                 <span>Edit</span>
-              </button>
+              </VButton>
+              <VButton
+                class="ml-2" color="danger" rounded size="small"
+                @click="DeleteStore(store.id)"
+              >
+              
+                <span>Delete</span>
+              </VButton>
             </div>
           </div>
         </div>
       </TransitionGroup>
     </div>
 
-    <!-- Modal Component -->
-    <!-- <StoreModal 
-    v-if="modalOpen"
-      :modalOpen="modalOpen"
-      :project="selectedProject"
-      @close="()=>{modalOpen = false}"
-      @save="updateStoreList"
-    /> -->
 
     <StoreModal 
     :modalOpen="modalOpen"
       :project="selectedProject"
       @close="()=>{modalOpen = false}"
-      @save="updateStoreList"
+      @save="fetchStoreList"
     />
 
     

@@ -230,7 +230,7 @@ onUnmounted(() => {
       margin: 0 auto;
 
       &.is-rounded {
-        border-radius: 12px;
+        border-radius: 32px;
       }
 
       .modal-card-head {
