@@ -43,9 +43,10 @@ export function useStoreManagement() {
     if (!filters.value) {
       return storeList.value;
     } else {
-      return storeList.value.filter((item) =>
-        item.name.match(new RegExp(filters.value, "i")) ||
-        item.email.match(new RegExp(filters.value, "i"))
+      return storeList.value.filter(
+        (item) =>
+          item.name.match(new RegExp(filters.value, "i")) ||
+          item.email.match(new RegExp(filters.value, "i"))
       );
     }
   });

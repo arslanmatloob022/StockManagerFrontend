@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { useStore } from "../stores/useStore";
 import type { SideblockItem } from "/@src/components/layouts/sideblock/sideblock.types";
 
+const store = useStore();
 const links = ref<SideblockItem[]>([
   {
     type: "link",
@@ -9,11 +11,29 @@ const links = ref<SideblockItem[]>([
     to: "/sidebar/dashboards",
   },
   {
-    type: "link",
-    label: "Manage Stock",
+    type: "collapse",
+    label: "Manage Store",
+    id: "reports",
     icon: "lucide:briefcase",
-    to: "/sidebar/dashboards/stock",
+    children: [
+      {
+        to: "/sidebar/dashboards/stock",
+        label: "Stock",
+        icon: "lnil lnil-analytics-alt-1",
+      },
+      {
+        to: "/sidebar/dashboards/batches",
+        label: "Batch",
+        icon: "lnil lnil-pie-chart",
+      },
+    ],
   },
+  // {
+  //   type: "link",
+  //   label: "Manage Stock",
+  //   icon: "lucide:briefcase",
+  //   to: "/sidebar/dashboards/stock",
+  // },
   {
     type: "link",
     label: "Manage Orders",
@@ -39,29 +59,7 @@ const links = ref<SideblockItem[]>([
     icon: "lucide:building",
     to: "/sidebar/dashboards/stores",
   },
-  // {
-  //   type: "collapse",
-  //   label: "Reports",
-  //   id: "reports",
-  //   icon: "lucide:briefcase",
-  //   children: [
-  //     {
-  //       to: "/sidebar/dashboards/analytics",
-  //       label: "Financial report",
-  //       icon: "lnil lnil-analytics-alt-1",
-  //     },
-  //     {
-  //       to: "/sidebar/dashboards/company",
-  //       label: "Stocks report",
-  //       icon: "lnil lnil-pie-chart",
-  //     },
-  //     {
-  //       to: "/sidebar/layouts/list-view-3",
-  //       label: "Growth report",
-  //       icon: "lnil lnil-stats-up",
-  //     },
-  //   ],
-  // },
+
   // {
   //   type: "divider",
   // },
@@ -211,7 +209,9 @@ const links = ref<SideblockItem[]>([
         <AnimatedLogo width="36px" />
       </RouterLink>
 
-      <h3 class="is-hidden-mobile ml-2">Vuero</h3>
+      <h3 class="is-hidden-mobile ml-2">
+        {{ store.loggedStore.name }}
+      </h3>
     </template>
 
     <template #toolbar>

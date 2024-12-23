@@ -1,5 +1,6 @@
-import { definePlugin } from '/@src/utils/plugins'
-
+import { definePlugin } from "/@src/utils/plugins";
+import { useApi } from "../composables/useApi";
+import { useStore } from "../stores/useStore";
 /**
  * Here we are setting up two router navigation guards
  * (note that we can have multiple guards in multiple plugins)
@@ -21,35 +22,33 @@ import { definePlugin } from '/@src/utils/plugins'
  * </template>
  */
 export default definePlugin(async ({ router, pinia, event }) => {
-  const userSession = useUserSession(pinia)
-  const token = useUserToken(event)
-  const $fetch = useApiFetch(event)
+  const userSession = useUserSession(pinia);
+  const api = useApi();
+  const store = useStore();
 
-  // 1. Load user profile if token is present.
-  // When using SSR, it should be hydrated from the server
-  if (token.value && !userSession.user) {
+  if (userSession.isLoggedIn) {
     try {
-      // Do api request call to retreive user profile.
-      // Note that the api is provided with json-server
-      const user = await $fetch('/api/users/me')
-      userSession.setUser(user)
-    }
-    catch (err) {
-      // Delete stored token if it fails
-      token.value = undefined
+      const resp = await api.get("/get_user_from_token/");
+      const userData = resp.data[0];
+      if (userData.store) {
+        await store.loadStore(userData.store);
+      }
+      userSession.setUser(userData);
+    } catch (err) {
+      userSession.logoutUser();
     }
   }
 
   // 2. If the page requires auth, check if user is logged in
   // if not, redirect to login page.
   router.beforeEach((to) => {
-    const token = useUserToken(event)
+    const token = useUserToken(event);
     if (to.meta.requiresAuth && !token.value) {
       return {
-        name: '/auth/login',
+        name: "/auth/login",
         // save the location we were at to come back later
         query: { redirect: to.fullPath },
-      }
+      };
     }
-  })
-})
+  });
+});

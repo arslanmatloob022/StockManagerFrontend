@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useStoreManagement } from '/@src/composables/StoreManagement';
+import { useStoreManagement } from "/@src/composables/StoreManagement";
 import StoreModal from "./StoreModal.vue";
 
 const {
@@ -14,7 +14,6 @@ const {
   DeleteStore,
 } = useStoreManagement();
 </script>
-
 
 <template>
   <div>
@@ -66,23 +65,26 @@ const {
           <div class="card-grid-item">
             <h3 class="dark-inverted">{{ store?.name }}</h3>
             <p>Owner: {{ store?.owner_name }}</p>
-            <div class=" mt-5">
+            <div class="mt-5">
               <VButton class="" color="info" rounded size="small">
-               
                 View
               </VButton>
               <VButton
-                class="ml-2" color="primary" rounded size="small"
+                class="ml-2"
+                color="primary"
+                rounded
+                size="small"
                 @click="openEditModal(store)"
               >
-               
                 <span>Edit</span>
               </VButton>
               <VButton
-                class="ml-2" color="danger" rounded size="small"
+                class="ml-2"
+                color="danger"
+                rounded
+                size="small"
                 @click="DeleteStore(store.id)"
               >
-              
                 <span>Delete</span>
               </VButton>
             </div>
@@ -91,19 +93,18 @@ const {
       </TransitionGroup>
     </div>
 
-
-    <StoreModal 
-    :modalOpen="modalOpen"
+    <StoreModal
+      :modalOpen="modalOpen"
       :project="selectedProject"
-      @close="()=>{modalOpen = false}"
+      @close="
+        () => {
+          modalOpen = false;
+        }
+      "
       @save="fetchStoreList"
     />
-
-    
   </div>
-
 </template>
-
 
 <style lang="scss">
 @import "/@src/scss/abstracts/all";

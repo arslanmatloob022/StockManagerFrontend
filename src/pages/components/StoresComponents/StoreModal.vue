@@ -7,18 +7,23 @@ const notyf = useNotyf();
 const api = useApi();
 const props = defineProps<{
   modalOpen: boolean;
-  project: {  name:string, owner_name:string, phone_number:string,address:string,id:string  } | null;
+  project: {
+    name: string;
+    owner_name: string;
+    phone_number: string;
+    address: string;
+    id: string;
+  } | null;
 }>();
 
 const emit = defineEmits(["close", "save"]);
 
 const localStore = ref({
-  id:"",
+  id: "",
   name: "",
-  owner_name:"",
-  phone_number:"",
-  address:"",
-  
+  owner_name: "",
+  phone_number: "",
+  address: "",
 });
 
 // Sync props.project with localStore when the modal opens
@@ -28,7 +33,13 @@ watch(
     if (newProject) {
       localStore.value = { ...newProject };
     } else {
-      localStore.value = { name: "", owner_name: "", phone_number: "",address:"",id:"" };
+      localStore.value = {
+        name: "",
+        owner_name: "",
+        phone_number: "",
+        address: "",
+        id: "",
+      };
     }
   },
   { immediate: true }
@@ -37,8 +48,8 @@ watch(
 const saveStore = async () => {
   try {
     const method = localStore.value.id ? "patch" : "post";
-    const url = localStore.value.id 
-      ? `/store/${localStore.value.id}/` 
+    const url = localStore.value.id
+      ? `/store/${localStore.value.id}/`
       : "/store/";
 
     await api[method](url, localStore.value);
@@ -50,75 +61,75 @@ const saveStore = async () => {
   }
 };
 
-
 const closeModal = () => {
   emit("close");
 };
 onMounted(() => {
-    console.log("prps",props.modalOpen)
-})
+  console.log("prps", props.modalOpen);
+});
 </script>
 
 <template>
-    
-    <VModal 
-  is="form" 
-  @submit.prevent="saveStore" 
-  :title="localStore.id ? 'Edit Store' : 'Add Store'" 
-  :rounded="true" 
-  :open="props.modalOpen" 
-  size="medium"  
-  @close="closeModal"
->
-  <template #content>
-    <VField>
-      <VLabel>Store Name*</VLabel>
-      <VControl>
-        <VInput required
-          v-model="localStore.name"
-          type="text"
-          placeholder="Enter store name"
-        />
-      </VControl>
-    </VField>
+  <VModal
+    is="form"
+    @submit.prevent="saveStore"
+    :title="localStore.id ? 'Edit Store' : 'Add Store'"
+    :open="props.modalOpen"
+    size="medium"
+    actions="right"
+    @close="closeModal"
+  >
+    <template #content>
+      <VField>
+        <VLabel>Store Name*</VLabel>
+        <VControl>
+          <VInput
+            required
+            v-model="localStore.name"
+            type="text"
+            placeholder="Enter store name"
+          />
+        </VControl>
+      </VField>
 
-    <VField>
-      <VLabel>Owner Name*</VLabel>
-      <VControl>
-        <VInput required
-          v-model="localStore.owner_name"
-          type="text"
-          placeholder="Enter owner name"
-        />
-      </VControl>
-    </VField>
+      <VField>
+        <VLabel>Owner Name*</VLabel>
+        <VControl>
+          <VInput
+            required
+            v-model="localStore.owner_name"
+            type="text"
+            placeholder="Enter owner name"
+          />
+        </VControl>
+      </VField>
 
-    <VField>
-      <VLabel>Phone Number</VLabel>
-      <VControl>
-        <VInput
-          v-model="localStore.phone_number"
-          type="tel"
-          placeholder="Enter phone number"
-        />
-      </VControl>
-    </VField>
+      <VField>
+        <VLabel>Phone Number</VLabel>
+        <VControl>
+          <VInput
+            v-model="localStore.phone_number"
+            type="tel"
+            placeholder="Enter phone number"
+          />
+        </VControl>
+      </VField>
 
-    <VField>
-      <VLabel>Store Address*</VLabel>
-      <VControl>
-        <VInput required
-          v-model="localStore.address"
-          type="text"
-          placeholder="Enter address"
-        />
-      </VControl>
-    </VField>
-  </template>
+      <VField>
+        <VLabel>Store Address*</VLabel>
+        <VControl>
+          <VInput
+            required
+            v-model="localStore.address"
+            type="text"
+            placeholder="Enter address"
+          />
+        </VControl>
+      </VField>
+    </template>
 
-  <template #action>
-    <VButton color="primary" raised type="submit">Save</VButton>
-  </template>
-</VModal>
-
+    <template #action>
+      <VButton color="primary" raised type="submit">Save</VButton>
+    </template>
+  </VModal>
 </template>

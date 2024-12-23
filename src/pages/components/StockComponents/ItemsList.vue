@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AddUpdateProduct from "./AddUpdateProduct.vue";
 import type { VAvatarProps } from "/@src/components/base/VAvatar.vue";
 
 import * as gridData from "/@src/data/layouts/card-grid-v2";
@@ -17,7 +18,7 @@ export interface ProjectData {
 const { onceError } = useImageError();
 
 const projects = gridData.projects as ProjectData[];
-
+const addProductModal = ref(false);
 const filters = ref("");
 
 const filteredData = computed(() => {
@@ -66,11 +67,15 @@ const optionsSingle = [
             />
           </VControl>
         </VField>
-        <VButton color="primary" raised>
+        <VButton
+          @click="addProductModal = !addProductModal"
+          color="primary"
+          raised
+        >
           <span class="icon">
             <i aria-hidden="true" class="fas fa-plus" />
           </span>
-          <span>New Project</span>
+          <span>New Product</span>
         </VButton>
       </div>
     </div>
@@ -147,6 +152,12 @@ const optionsSingle = [
       </TransitionGroup>
     </div>
   </div>
+  <AddUpdateProduct
+    v-if="addProductModal"
+    :open-product-modal="addProductModal"
+    @update:close-modal-handler="addProductModal = false"
+  />
+  />
 </template>
 
 <style lang="scss">

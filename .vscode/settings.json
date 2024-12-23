@@ -4,6 +4,6 @@
     "public/images/illustrations/messages",
     "src/components/partials/inbox/messages"
   ],
-  "cSpell.words": ["notyf"],
+  "cSpell.words": ["notyf", "pinia", "Vuero"],
   "i18n-ally.keystyle": "nested"
 }

@@ -1,28 +1,35 @@
 <script setup lang="ts">
-import type { SideblockLayoutContext, SideblockItem, SideblockTheme } from './sideblock.types'
-import { injectionKey } from './sideblock.context'
-import SideblockItemMobile from './SideblockItemMobile.vue'
+import type {
+  SideblockLayoutContext,
+  SideblockItem,
+  SideblockTheme,
+} from "./sideblock.types";
+import { injectionKey } from "./sideblock.context";
+import SideblockItemMobile from "./SideblockItemMobile.vue";
+import { useUserSession } from "../../../stores/useUserSession";
+import { useStore } from "/@src/stores/useStore";
 
 const props = withDefaults(
   defineProps<{
-    links?: SideblockItem[]
-    theme?: SideblockTheme
-    size?: 'default' | 'large' | 'wide' | 'full'
-    closeOnChange?: boolean
-    openOnMounted?: boolean
+    links?: SideblockItem[];
+    theme?: SideblockTheme;
+    size?: "default" | "large" | "wide" | "full";
+    closeOnChange?: boolean;
+    openOnMounted?: boolean;
   }>(),
   {
     links: () => [],
-    theme: 'default',
-    size: 'default',
-  },
-)
+    theme: "default",
+    size: "default",
+  }
+);
 
-const pageTitle = useVueroContext<string>('page-title')
-const route = useRoute()
-
-const isMobileSideblockOpen = ref(false)
-const isDesktopSideblockOpen = ref(props.openOnMounted)
+const store = useStore();
+const pageTitle = useVueroContext<string>("page-title");
+const route = useRoute();
+const userSession = useUserSession();
+const isMobileSideblockOpen = ref(false);
+const isDesktopSideblockOpen = ref(props.openOnMounted);
 
 // provide context to children
 const context: SideblockLayoutContext = {
@@ -33,11 +40,11 @@ const context: SideblockLayoutContext = {
 
   isMobileSideblockOpen,
   isDesktopSideblockOpen,
-}
-provide(injectionKey, context)
+};
+provide(injectionKey, context);
 
 // using reactive context for slots, has better dev experience
-const contextRx = reactive(context)
+const contextRx = reactive(context);
 
 // watch(
 //   () => route.fullPath,
@@ -93,20 +100,13 @@ const contextRx = reactive(context)
 
     <!-- Desktop navigation -->
     <Transition name="slide-x">
-      <Sideblock
-        v-if="isDesktopSideblockOpen"
-        :theme="props.theme"
-      >
+      <Sideblock v-if="isDesktopSideblockOpen" :theme="props.theme">
         <template #header>
-          <slot name="logo" v-bind="contextRx" />
+          <slot name="logo" v-bind="contextRx"> </slot>
         </template>
         <template #links>
           <slot name="sideblock-links" v-bind="contextRx">
-            <SideblockItem
-              v-for="(link, key) in props.links"
-              :key
-              :link
-            />
+            <SideblockItem v-for="(link, key) in props.links" :key :link />
           </slot>
         </template>
 
@@ -117,12 +117,7 @@ const contextRx = reactive(context)
     </Transition>
     <!-- /Desktop navigation -->
 
-    <ViewWrapper
-      full
-      :class="[
-        isDesktopSideblockOpen && 'is-pushed-block',
-      ]"
-    >
+    <ViewWrapper full :class="[isDesktopSideblockOpen && 'is-pushed-block']">
       <template v-if="props.size === 'full'">
         <slot name="page-heading" v-bind="contextRx">
           <SideblockPageHeading
@@ -132,10 +127,7 @@ const contextRx = reactive(context)
             {{ pageTitle }}
 
             <template #toolbar>
-              <slot
-                name="toolbar"
-                v-bind="contextRx"
-              />
+              <slot name="toolbar" v-bind="contextRx" />
             </template>
           </SideblockPageHeading>
         </slot>
@@ -143,9 +135,7 @@ const contextRx = reactive(context)
         <slot v-bind="contextRx" />
       </template>
       <PageContentWrapper v-else :size="props.size">
-        <PageContent
-          class="is-relative"
-        >
+        <PageContent class="is-relative">
           <slot name="page-heading" v-bind="contextRx">
             <SideblockPageHeading
               :open="isDesktopSideblockOpen"
@@ -154,10 +144,7 @@ const contextRx = reactive(context)
               {{ pageTitle }}
 
               <template #toolbar>
-                <slot
-                  name="toolbar"
-                  v-bind="contextRx"
-                />
+                <slot name="toolbar" v-bind="contextRx" />
               </template>
             </SideblockPageHeading>
           </slot>

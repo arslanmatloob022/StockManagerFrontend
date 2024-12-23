@@ -2,7 +2,9 @@
 import { useApi } from "/@src/composables/useApi";
 import { useNotyf } from "/@src/composables/notyf";
 import { convertToFormData } from "/@src/commonScripts/commonComponents";
+import { useStore } from "/@src/stores/useStore";
 
+const store = useStore();
 const notyf = useNotyf();
 const api = useApi();
 const loading = ref(false);
@@ -51,7 +53,7 @@ const userDataModel = ref<UserData>({
   is_active: false,
   is_staff: false,
   is_superuser: false,
-  store: "",
+  store: store.loggedStore.id,
 });
 
 const userRoles = ref([
@@ -87,7 +89,6 @@ const addUpdateUserHandler = async () => {
     size="medium"
     actions="right"
     title="User Information"
-    rounded
     @submit.prevent="addUpdateUserHandler"
     @close="closeModalHandler"
   >

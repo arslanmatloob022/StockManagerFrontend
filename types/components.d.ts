@@ -392,8 +392,6 @@ declare module 'vue' {
     TextareaDisabledDocumentation: typeof import('./../documentation/elements/forms/textarea/textarea-disabled-documentation.md')['default']
     TextareaFocusDocumentation: typeof import('./../documentation/elements/forms/textarea/textarea-focus-documentation.md')['default']
     TextareaLoadingDocumentation: typeof import('./../documentation/elements/forms/textarea/textarea-loading-documentation.md')['default']
-    ThemeDocumentation: typeof import('./../documentation/elements/theme-documentation.md')['default']
-    ThemingDocumentation: typeof import('./../documentation/elements/theming-documentation.md')['default']
     TilesGridV1: typeof import('./../src/components/pages/layouts/tiles-grid/TilesGridV1.vue')['default']
     TilesGridV2: typeof import('./../src/components/pages/layouts/tiles-grid/TilesGridV2.vue')['default']
     TilesGridV3: typeof import('./../src/components/pages/layouts/tiles-grid/TilesGridV3.vue')['default']

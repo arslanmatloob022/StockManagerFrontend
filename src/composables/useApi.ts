@@ -2,7 +2,7 @@
 import { AxisConfigurationBase } from "billboard.js";
 import axios from "axios";
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
-import { useUserSession } from "../stores/userSession";
+import { useUserSession } from "../stores/useUserSession";
 import { useNotyf } from "./notyf";
 import { useRouter } from "vue-router";
 const { VITE_API_BASE_URL } = import.meta.env;

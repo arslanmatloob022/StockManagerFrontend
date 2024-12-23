@@ -1,25 +1,9 @@
 <script setup lang="ts">
-import type { VTagColor } from "/@src/components/base/VTag.vue";
-import type { VAvatarProps } from "/@src/components/base/VAvatar.vue";
-import * as listData from "/@src/data/layouts/view-list-v1";
 import AddUpdateUser from "./AddUpdateUser.vue";
+import { useApi } from "/@src/composables/useApi";
+import { formatDateTime } from "/@src/commonScripts/commonComponents";
+const api = useApi();
 
-export interface UserData extends VAvatarProps {
-  name: string;
-  location: string;
-  role: string;
-  roleColor: VTagColor;
-  medias: {
-    avatar: string;
-    flag: string;
-  };
-  stats: {
-    projects: number;
-    replies: number;
-    posts: number;
-  };
-  teams: VAvatarProps[];
-}
 const openUserModal = ref(false);
 
 const closeUserModal = () => {
@@ -29,24 +13,76 @@ const closeUserModal = () => {
 const openUserModalHandler = () => {
   openUserModal.value = true;
 };
+interface User {
+  id: string;
+  password: string;
+  last_login: string;
+  email: string;
+  phone_number: string;
+  username: string;
+  role: string;
+  is_active: boolean;
+  is_staff: boolean;
+  is_superuser: boolean;
+  store: string;
+  user_permissions: string[];
+}
 
-const getUsersList = () => {};
+const users = ref([
+  {
+    id: "",
+    password: "",
+    last_login: "",
+    email: "",
+    phone_number: "",
+    username: "",
+    role: "",
+    is_active: false,
+    is_staff: false,
+    is_superuser: false,
+    store: "",
+    user_permissions: [],
+  },
+]);
 
-const users = listData.users as UserData[];
+const getUsersList = async () => {
+  try {
+    const resp = await api.get("/user/");
+    users.value = resp.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+function getInitials(username: string): string {
+  if (username) {
+    const nameParts = username.trim().split(" ");
+    const firstInitial = nameParts[0]?.[0]?.toUpperCase() || "";
+    const lastInitial = nameParts[1]?.[0]?.toUpperCase() || "";
+
+    return `${firstInitial}${lastInitial}` || firstInitial || lastInitial;
+  } else {
+    return "N/A";
+  }
+}
 
 const filters = ref("");
 
 const filteredData = computed(() => {
   if (!filters.value) {
-    return users;
+    return users.value;
   } else {
-    return users.filter((item) => {
+    return users.value.filter((item) => {
       return (
-        item.name.match(new RegExp(filters.value, "i")) ||
-        item.location.match(new RegExp(filters.value, "i"))
+        item?.username.match(new RegExp(filters.value, "i")) ||
+        item?.email.match(new RegExp(filters.value, "i"))
       );
     });
   }
+});
+
+onMounted(() => {
+  getUsersList();
 });
 </script>
 
@@ -115,50 +151,39 @@ const filteredData = computed(() => {
           >
             <div class="list-view-item-inner">
               <VAvatar
-                :picture="item.medias.avatar"
+                color="primary"
                 size="large"
-                :badge="item.medias.flag"
+                :initials="getInitials(item?.username)"
               />
               <div class="meta-left">
-                <h3>{{ item.name }}</h3>
+                <h3>{{ item?.username }}</h3>
                 <span>
                   <VIcon icon="lucide:map-pin" />
-                  <span>{{ item.location }}</span>
+                  <span>{{ item?.email }}</span>
                 </span>
               </div>
               <div class="meta-right">
                 <div class="tags">
-                  <VTag
-                    :label="item.role"
-                    :color="item.roleColor"
-                    rounded
-                    elevated
-                  />
+                  <VTag :label="item?.role" color="primary" rounded elevated />
                 </div>
 
                 <div class="stats">
                   <div class="stat">
-                    <span>{{ item.stats.projects }}</span>
-                    <span>Projects</span>
+                    <span>{{ item?.phone_number }}</span>
+                    <span>Phone</span>
                   </div>
                   <div class="separator" />
                   <div class="stat">
-                    <span>{{ item.stats.replies }}</span>
-                    <span>Replies</span>
+                    <span>{{ item?.role }}</span>
+                    <span>Role</span>
                   </div>
                   <div class="separator" />
                   <div class="stat">
-                    <span>{{ item.stats.posts }}</span>
-                    <span>Posts</span>
+                    <span>{{ formatDateTime(item?.last_login) }}</span>
+                    <span>Last login</span>
                   </div>
                 </div>
 
-                <div class="network">
-                  <VAvatarStack :avatars="item.teams" :limit="3" size="small" />
-                  <span>in Team</span>
-                </div>
-
-                <!--Dropdown-->
                 <ListViewV1Dropdown />
               </div>
             </div>
