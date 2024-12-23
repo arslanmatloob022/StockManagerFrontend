@@ -26,26 +26,27 @@ const handleLogin = async () => {
       email: userData.value.email,
       password: userData.value.password,
     });
-    userSession.setUser(resp.data.user);
     userSession.setToken(resp.data.access);
+    userSession.setUser(resp.data.user);
     console.log("User session", userSession.user);
     console.log("User Token", userSession.token);
     if (resp.data.user.store) {
       store.loadStore(resp.data.user.store);
     }
     notyf.dismissAll();
-    notyf.primary(`Welcome back, ${resp.data.user.username}`);
     router.push("/sidebar/dashboards");
+    notyf.primary(`Welcome back, ${resp.data.user.username}`);
   } catch (err) {
     console.log(err);
-    router.push(redirect);
+    // router.push(redirect);
+    notyf.error("Something went wrong");
   } finally {
     isLoading.value = false;
   }
 };
 
 useHead({
-  title: "The Stock Manager",
+  title: "The Stockify",
 });
 </script>
 

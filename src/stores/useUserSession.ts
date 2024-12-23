@@ -16,7 +16,7 @@ export interface User {
   is_sentMail: number;
 }
 
-export const useUserSession = defineStore("userSession", () => {
+export const useUserSession = defineStore("useUserSession", () => {
   const token = useStorage("token", "");
   const code = useStorage("code", "");
 
