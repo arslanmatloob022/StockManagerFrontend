@@ -28,7 +28,7 @@ const {
       <div class="buttons">
         <VButton color="primary" raised @click="openAddModal">
           <span class="icon">
-            <i aria-hidden="true" class="fas fa-plus" />
+            <i aria-hidden="true" class="fas fa-plus" ></i>
           </span>
           <span>New Store</span>
         </VButton>

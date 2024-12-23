@@ -3,10 +3,13 @@ import { useApi } from "/@src/composables/useApi";
 import { useNotyf } from "/@src/composables/notyf";
 import { convertToFormData } from "/@src/commonScripts/commonComponents";
 import { useStore } from "/@src/stores/useStore";
+import { onMounted } from "vue";
+
 const notyf = useNotyf();
 const api = useApi();
 const loading = ref(false);
 const store = useStore();
+
 const props = withDefaults(
   defineProps<{
     openProductModal?: boolean;
@@ -20,7 +23,7 @@ const props = withDefaults(
 
 const emits = defineEmits<{
   (e: "update:closeModalHandler", value: boolean): void;
-  (e: "update:callOnSuccess", value: any): null;
+  (e: "update:callOnSuccess", value: any): void;
 }>();
 
 const closeModalHandler = () => {
@@ -31,35 +34,77 @@ const callOnSuccessHandler = () => {
   emits("update:callOnSuccess", null);
 };
 
-interface productData {
+const tagsOptions = ref<string[]>([]);
+
+interface ProductData {
   name: string;
   description: string;
   price: string;
   quantity: string;
-  tag: string;
+  tag: string[];
   store: string;
 }
 
-const productDataModel = ref<productData>({
+const productDataModel = ref<ProductData>({
   name: "",
   description: "",
   price: "",
   quantity: "",
-  tag: "",
+  tag: [],
   store: store.loggedStore.id,
+});
+
+// Fetch product data if editing
+const fetchProductData = async () => {
+  if (!props.productId) return;
+
+  try {
+    loading.value = true;
+    const { data } = await api.get(`/product/${props.productId}/`);
+    productDataModel.value = {
+      ...data,
+      tag: Array.isArray(data.tag) ? data.tag :data.tag, // Ensure tag is an array
+      store: data.store || store.loggedStore.id,
+    };
+    tagsOptions.value = data.tag;
+  } catch (err) {
+    console.error("Error fetching product data:", err);
+    notyf.error("Failed to load product details.");
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  if (props.productId) {
+    fetchProductData();
+  }
 });
 
 const addUpdateUserHandler = async () => {
   try {
     loading.value = true;
-    const resp = await api.post(
-      "/product/",
-      convertToFormData(productDataModel.value, "")
-    );
+
+    const payload = {
+      ...productDataModel.value,
+      tag: JSON.stringify(productDataModel.value.tag), // Convert tag array to JSON string
+    };
+
+    if (props.productId) {
+      // Update product
+      await api.patch(`/product/${props.productId}/`, convertToFormData(payload, ""));
+      notyf.success("Product updated successfully");
+    } else {
+      // Add product
+      await api.post("/product/", convertToFormData(payload, ""));
+      notyf.success("Product added successfully");
+    }
+
     closeModalHandler();
-    notyf.success("User added successfully");
+    callOnSuccessHandler();
   } catch (err) {
-    console.log(err);
+    console.error("Error while adding/updating product:", err);
+    notyf.error("An error occurred. Please try again.");
   } finally {
     loading.value = false;
   }
@@ -109,13 +154,17 @@ const addUpdateUserHandler = async () => {
             />
           </VControl>
         </VField>
-        <VField class="column is-6">
-          <VLabel>Tag</VLabel>
+        <VField v-slot="{ id }" class="column is-6">
+          <VLabel>Tags</VLabel>
           <VControl>
-            <VInput
+            <Multiselect
               v-model="productDataModel.tag"
-              type="text"
-              placeholder="Product tag"
+              :attrs="{ id }"
+              mode="tags"
+              :searchable="true"
+              :create-tag="true"
+              :options="tagsOptions"
+              placeholder="Add tags"
             />
           </VControl>
         </VField>
@@ -134,10 +183,11 @@ const addUpdateUserHandler = async () => {
     </template>
     <template #action>
       <VButton type="submit" color="primary">
-        {{ props.productId ? "Update" : "Add" }}Product</VButton
-      >
+        {{ props.productId ? "Update" : "Add" }} Product
+      </VButton>
     </template>
-    <template #cancel> </template>
+    <template #cancel></template>
   </VModal>
 </template>
+
 <style lang="scss" scoped></style>
