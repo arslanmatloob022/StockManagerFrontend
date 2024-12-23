@@ -1,48 +1,66 @@
 <script setup lang="ts">
 import AddUpdateProduct from "./AddUpdateProduct.vue";
-import type { VAvatarProps } from "/@src/components/base/VAvatar.vue";
+import { useApi } from "/@src/composables/useApi";
+import { useNotyf } from "/@src/composables/notyf";
+import { ref, computed, onMounted } from "vue";
 
-import * as gridData from "/@src/data/layouts/card-grid-v2";
-
-export interface ProjectData {
+export interface Product {
+  id: string;
   name: string;
-  dueDate: string;
-  updated: string;
-  image: string;
-  team: VAvatarProps[];
-  owner: {
-    name: string;
-    avatar: string;
-  };
+  description: string;
+  price: string;
+  quantity: string;
+  tag: string[];
+  store: string;
 }
-const { onceError } = useImageError();
 
-const projects = gridData.projects as ProjectData[];
+const api = useApi();
+const notyf = useNotyf();
+const products = ref<Product[]>([]);
 const addProductModal = ref(false);
+const currentProductId = ref<string | null>(null); // Store the product ID being edited
 const filters = ref("");
 
-const filteredData = computed(() => {
-  if (!filters.value) {
-    return projects;
-  } else {
-    return projects.filter((item) => {
-      return (
-        item.name.match(new RegExp(filters.value, "i")) ||
-        item.dueDate.match(new RegExp(filters.value, "i")) ||
-        item.owner.name.match(new RegExp(filters.value, "i"))
-      );
-    });
+const fetchProducts = async () => {
+  try {
+    const resp = await api.get("/product/");
+    products.value = resp.data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    notyf.error("Failed to fetch products.");
   }
+};
+
+const deleteProduct = async (productId: string) => {
+  try {
+    await api.delete(`/product/${productId}/`);
+    products.value = products.value.filter((product) => product.id !== productId);
+    notyf.success("Product deleted successfully.");
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    notyf.error("Failed to delete product.");
+  }
+};
+
+const filteredData = computed(() => {
+  if (!filters.value) return products.value;
+  return products.value.filter((product) =>
+    [product.name, product.description].some((field) =>
+      field.toLowerCase().includes(filters.value.toLowerCase())
+    )
+  );
 });
 
-const valueSingle = ref(0);
-const optionsSingle = [
-  "All Projects",
-  "Web Apps",
-  "Mobile Apps",
-  "Dashboards",
-  "Landing Pages",
-];
+const handleEditProduct = (productId: string) => {
+  currentProductId.value = productId;
+  addProductModal.value = true;
+};
+
+const handleSuccess = async () => {
+  await fetchProducts();
+};
+
+onMounted(fetchProducts);
 </script>
 
 <template>
@@ -52,23 +70,13 @@ const optionsSingle = [
         <input
           v-model="filters"
           class="input custom-text-filter"
-          placeholder="Search..."
+          placeholder="Search products..."
         />
       </VControl>
 
       <div class="buttons">
-        <VField class="h-hidden-mobile">
-          <VControl>
-            <Multiselect
-              v-model="valueSingle"
-              :options="optionsSingle"
-              :max-height="145"
-              placeholder="Select an option"
-            />
-          </VControl>
-        </VField>
         <VButton
-          @click="addProductModal = !addProductModal"
+          @click="() => { addProductModal = true; currentProductId = null; }"
           color="primary"
           raised
         >
@@ -81,84 +89,70 @@ const optionsSingle = [
     </div>
 
     <div class="card-grid card-grid-v2">
-      <!--List Empty Search Placeholder -->
       <VPlaceholderPage
-        :class="[filteredData.length !== 0 && 'is-hidden']"
-        title="We couldn't find any matching results."
-        subtitle="Too bad. Looks like we couldn't find any matching results for the
-          search terms you've entered. Please try different search terms or
-          criteria."
+        v-if="filteredData.length === 0"
+        title="No Products Found"
+        subtitle="Try changing your search terms."
         larger
       >
         <template #image>
-          <img
-            class="light-image"
-            src="/images/illustrations/placeholders/search-3.svg"
-            alt=""
-          />
-          <img
-            class="dark-image"
-            src="/images/illustrations/placeholders/search-3-dark.svg"
-            alt=""
-          />
+          <img src="/images/illustrations/placeholders/search-3.svg" alt="" />
         </template>
       </VPlaceholderPage>
 
-      <!--Card Grid v2-->
       <TransitionGroup name="list" tag="div" class="columns is-multiline">
-        <!--Grid Item-->
-        <div v-for="(item, key) in filteredData" :key="key" class="column is-4">
+        <div v-for="product in filteredData" :key="product.id" class="column is-4">
           <div class="card-grid-item">
-            <div class="card">
+            <div class="card hover-card">
               <header class="card-header">
-                <div class="card-header-title">
-                  <VAvatar size="small" :picture="item.owner.avatar" />
-                  <div class="meta">
-                    <span class="dark-inverted">{{ item.owner.name }}</span>
-                    <span>updated {{ item.updated }}</span>
-                  </div>
-                </div>
-                <div class="card-header-icon">
-                  <UserCardDropdown />
+                <h3 class="card-header-title is-size-5 has-text-weight-bold">
+                  {{ product.name }}
+                </h3>
+                <div class="card-header-icon buttons-container">
+                  <VButton icon color="info" rounded @click="handleEditProduct(product.id)">
+                    <i class="fas fa-edit"></i>
+                  </VButton>
+                  <VButton icon color="danger" rounded class="ml-2" @click="deleteProduct(product.id)">
+                    <i class="fas fa-trash"></i>
+                  </VButton>
                 </div>
               </header>
-              <div class="card-image">
-                <figure class="image is-16by9">
-                  <img
-                    :src="item.image"
-                    alt=""
-                    @error.once="onceError($event, 1280, 960)"
-                  />
-                </figure>
-              </div>
               <div class="card-content">
-                <div class="card-content-flex">
-                  <div class="card-info">
-                    <h3 class="dark-inverted">
-                      {{ item.name }}
-                    </h3>
-                    <p><VIcon icon="lucide:calendar" />{{ item.dueDate }}</p>
+                <div class="content">
+                  <div class="info-block">
+                    <span class="info-label">Price:</span>
+                    <span class="info-value">${{ product.price }}</span>
                   </div>
-                  <VAvatarStack :avatars="item.team" size="small" :limit="3" />
+                  <div class="info-block">
+                    <span class="info-label">Quantity:</span>
+                    <span class="info-value">{{ product.quantity }}</span>
+                  </div>
+                  <div class="info-block">
+                    <span class="info-label">Tags:</span>
+                    <span class="info-value">{{ product.tag.join(", ") }}</span>
+                  </div>
+                  <p class="description">
+                    {{ product.description?.slice(0,100) || "No description available." }}
+                  </p>
                 </div>
               </div>
               <footer class="card-footer">
-                <a href="#" class="card-footer-item">View</a>
-                <a href="#" class="card-footer-item">Settings</a>
+                <a href="#" class="card-footer-item has-text-primary">View Details</a>
               </footer>
             </div>
           </div>
         </div>
       </TransitionGroup>
     </div>
+    <AddUpdateProduct v-if="addProductModal"
+      :open-product-modal="addProductModal"
+      :product-id="currentProductId"
+      @update:close-modal-handler="addProductModal = false"
+      @update:call-on-success="handleSuccess"
+    />
   </div>
-  <AddUpdateProduct
-    v-if="addProductModal"
-    :open-product-modal="addProductModal"
-    @update:close-modal-handler="addProductModal = false"
-  />
-  />
 </template>
+
 
 <style lang="scss">
 .card-grid {
@@ -306,5 +300,80 @@ const optionsSingle = [
       }
     }
   }
+}
+</style>
+<style lang="scss" scoped>
+.card-grid-item {
+  margin-bottom: 20px;
+}
+
+.card {
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  background-color: #f5f5f5;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-header-title {
+  margin: 0;
+}
+
+.buttons-container {
+  display: flex;
+  gap: 10px;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.info-block {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #4a4a4a;
+}
+
+.info-value {
+  font-weight: 400;
+  color: #4a4a4a;
+}
+
+.description {
+  margin-top: 15px;
+  color: #6b6b6b;
+  font-size: 0.9rem;
+}
+
+.card-footer {
+  background-color: #fafafa;
+  border-top: 1px solid #eaeaea;
+}
+
+.card-footer-item {
+  padding: 10px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.card-footer-item:hover {
+  text-decoration: underline;
 }
 </style>
