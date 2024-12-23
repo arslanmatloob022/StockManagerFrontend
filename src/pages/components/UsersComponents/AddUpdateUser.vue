@@ -3,7 +3,9 @@ import { useApi } from "/@src/composables/useApi";
 import { useNotyf } from "/@src/composables/notyf";
 import { convertToFormData } from "/@src/commonScripts/commonComponents";
 import { useStore } from "/@src/stores/useStore";
+import { useUserStore } from "/@src/stores/usersStore";
 
+const userStore = useUserStore();
 const store = useStore();
 const notyf = useNotyf();
 const api = useApi();
@@ -11,9 +13,11 @@ const loading = ref(false);
 const props = withDefaults(
   defineProps<{
     openUserModal?: boolean;
+    userId?: string;
   }>(),
   {
     openUserModal: false,
+    userId: "",
   }
 );
 
@@ -68,10 +72,19 @@ const userRoles = ref([
 const addUpdateUserHandler = async () => {
   try {
     loading.value = true;
-    const resp = await api.post(
-      "/user/",
-      convertToFormData(userDataModel.value, "")
-    );
+    if (props.userId) {
+      delete userDataModel.value.password;
+      const resp = await api.patch(
+        `/user/${props.userId}/`,
+        convertToFormData(userDataModel.value, "")
+      );
+    } else {
+      const resp = await api.post(
+        "/user/",
+        convertToFormData(userDataModel.value, "")
+      );
+    }
+    callOnSuccessHandler();
     closeModalHandler();
     notyf.success("User added successfully");
   } catch (err) {
@@ -80,6 +93,22 @@ const addUpdateUserHandler = async () => {
     loading.value = false;
   }
 };
+
+const getUserDetail = async () => {
+  try {
+    loading.value = true;
+    const resp = await api.get(`/user/${props.userId}`);
+    userDataModel.value = resp.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+onMounted(() => {
+  if (props.userId) {
+    getUserDetail();
+  }
+});
 </script>
 
 <template>
@@ -88,7 +117,7 @@ const addUpdateUserHandler = async () => {
     :open="props.openUserModal"
     size="medium"
     actions="right"
-    title="User Information"
+    :title="props.userId ? 'Update User' : 'Add User'"
     @submit.prevent="addUpdateUserHandler"
     @close="closeModalHandler"
   >
@@ -174,7 +203,9 @@ const addUpdateUserHandler = async () => {
       </div>
     </template>
     <template #action>
-      <VButton type="submit" color="primary">Add User</VButton>
+      <VButton type="submit" color="primary">{{
+        props.userId ? "Update User" : "Add User"
+      }}</VButton>
     </template>
     <template #cancel> </template>
   </VModal>

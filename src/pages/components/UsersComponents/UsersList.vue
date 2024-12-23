@@ -2,9 +2,12 @@
 import AddUpdateUser from "./AddUpdateUser.vue";
 import { useApi } from "/@src/composables/useApi";
 import { formatDateTime } from "/@src/commonScripts/commonComponents";
-const api = useApi();
+import { useUserStore } from "/@src/stores/usersStore";
 
+const userStore = useUserStore();
+const api = useApi();
 const openUserModal = ref(false);
+const selectedUser = ref("");
 
 const closeUserModal = () => {
   openUserModal.value = false;
@@ -67,7 +70,10 @@ function getInitials(username: string): string {
 }
 
 const filters = ref("");
-
+const openUserUpdateModal = (id: any) => {
+  selectedUser.value = id;
+  openUserModal.value = true;
+};
 const filteredData = computed(() => {
   if (!filters.value) {
     return users.value;
@@ -184,7 +190,59 @@ onMounted(() => {
                   </div>
                 </div>
 
-                <ListViewV1Dropdown />
+                <VDropdown icon="lucide:more-vertical" spaced right>
+                  <template #content>
+                    <a role="menuitem" class="dropdown-item is-media">
+                      <div class="icon">
+                        <i aria-hidden="true" class="lnil lnil-user-alt" />
+                      </div>
+                      <div class="meta">
+                        <span>Profile</span>
+                        <span>View profile</span>
+                      </div>
+                    </a>
+
+                    <a
+                      role="menuitem"
+                      class="dropdown-item is-media"
+                      @click="openUserUpdateModal(item.id)"
+                    >
+                      <div class="icon">
+                        <i aria-hidden="true" class="lnil lnil-bubble" />
+                      </div>
+                      <div class="meta">
+                        <span>Edit</span>
+                        <span>Update User Information</span>
+                      </div>
+                    </a>
+
+                    <a role="menuitem" href="#" class="dropdown-item is-media">
+                      <div class="icon">
+                        <i aria-hidden="true" class="lnil lnil-travel" />
+                      </div>
+                      <div class="meta">
+                        <span>Transfer</span>
+                        <span>Transfer to other list</span>
+                      </div>
+                    </a>
+
+                    <hr class="dropdown-divider" />
+
+                    <a
+                      role="menuitem"
+                      @click="userStore.deleteUser(item.id)"
+                      class="dropdown-item is-media"
+                    >
+                      <div class="icon">
+                        <i aria-hidden="true" class="lnil lnil-trash" />
+                      </div>
+                      <div class="meta">
+                        <span>Remove</span>
+                        <span>Remove from list</span>
+                      </div>
+                    </a>
+                  </template>
+                </VDropdown>
               </div>
             </div>
           </div>
@@ -203,6 +261,7 @@ onMounted(() => {
   <AddUpdateUser
     v-if="openUserModal"
     :openUserModal="openUserModal"
+    :userId="selectedUser"
     @update:closeModalHandler="closeUserModal"
     @update:callOnSuccess="getUsersList"
   />
