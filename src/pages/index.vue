@@ -28,8 +28,6 @@ const handleLogin = async () => {
     });
     userSession.setToken(resp.data.access);
     userSession.setUser(resp.data.user);
-    console.log("User session", userSession.user);
-    console.log("User Token", userSession.token);
     if (resp.data.user.store) {
       store.loadStore(resp.data.user.store);
     }
@@ -38,7 +36,6 @@ const handleLogin = async () => {
     notyf.primary(`Welcome back, ${resp.data.user.username}`);
   } catch (err) {
     console.log(err);
-    // router.push(redirect);
     notyf.error("Something went wrong");
   } finally {
     isLoading.value = false;
@@ -46,7 +43,7 @@ const handleLogin = async () => {
 };
 
 useHead({
-  title: "The Stockify",
+  title: "Stockify",
 });
 </script>
 

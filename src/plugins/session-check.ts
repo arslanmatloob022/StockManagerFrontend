@@ -1,6 +1,7 @@
 import { definePlugin } from "/@src/utils/plugins";
 import { useApi } from "../composables/useApi";
 import { useStore } from "../stores/useStore";
+import { useUserSession } from "../stores/useUserSession";
 /**
  * Here we are setting up two router navigation guards
  * (note that we can have multiple guards in multiple plugins)
