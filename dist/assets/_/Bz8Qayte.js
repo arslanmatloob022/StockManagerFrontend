@@ -1,0 +1,1 @@
+import{e as s,g as a,j as o,q as e,x as t,a2 as d}from"../../index-BBZ1hd8o.js";const n=d(s({__name:"VTags",props:{addons:{type:Boolean}},setup(s){const d=s;return(s,n)=>(a(),o("div",{class:t(["tags",[d.addons&&"has-addons"]])},[e(s.$slots,"default")],2))}}),[["__file","VTags.vue"]]);export{n as _};

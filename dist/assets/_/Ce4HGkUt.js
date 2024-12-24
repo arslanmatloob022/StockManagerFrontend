@@ -1,0 +1,1 @@
+import{e as s,U as a,o as e,g as d,j as i,a2 as o}from"../../index-BBZ1hd8o.js";/* empty css        */const r=o(s({__name:"index",setup(s){const o=a();return e((()=>{o.push("/sidebar/dashboards")})),(s,a)=>(d(),i("div"))}}),[["__file","index.vue"]]);export{r as default};

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+    <link
+      rel="preload"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="/vendors/font-awesome-v5.css"
+    />
+    <link
+      rel="preload"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="/vendors/line-icons-pro.css"
+    />
+
+    
+    <script>
+      ;(function () {
+        const prefersDark =
+          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        const setting = localStorage.getItem('color-schema') || 'auto'
+        if (setting === 'dark' || (prefersDark && setting !== 'light'))
+          document.documentElement.classList.toggle('is-dark', true)
+      })()
+    </script>
+    <script type="module" crossorigin src="/index-BBZ1hd8o.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/BUMPcf4G.css">
+    <link rel="stylesheet" crossorigin href="/assets/CE_6DCxf.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body>
+    
+    <div data-teleport-bg></div>
+
+    <div id="app" class="app-wrapper"></div>
+  </body>
+</html>

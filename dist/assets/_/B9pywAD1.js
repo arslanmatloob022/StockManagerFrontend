@@ -1,0 +1,1 @@
+/* empty css        */import{a2 as s,g as t,j as e,q as n}from"../../index-BBZ1hd8o.js";const a={class:"page-content"};const o=s({},[["render",function(s,o){return t(),e("div",a,[n(s.$slots,"default")])}],["__file","PageContent.vue"]]);export{o as _};

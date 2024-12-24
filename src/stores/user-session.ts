@@ -1,21 +1,21 @@
-import { acceptHMRUpdate, defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { acceptHMRUpdate, defineStore } from "pinia";
+import { ref, computed } from "vue";
 
-export type UserData = Record<string, any>
+export type UserData = Record<string, any>;
 
-export const useUserSession = defineStore('userSession', () => {
-  const user = ref<Partial<UserData>>()
+export const userSession = defineStore("userSession", () => {
+  const user = ref<Partial<UserData>>();
 
-  const isLoggedIn = computed(() => user.value !== undefined)
+  const isLoggedIn = computed(() => user.value !== undefined);
 
   function setUser(newUser: Partial<UserData>) {
-    user.value = newUser
+    user.value = newUser;
   }
 
   async function logoutUser() {
-    const token = useUserToken()
-    token.value = undefined
-    user.value = undefined
+    const token = useUserToken();
+    token.value = undefined;
+    user.value = undefined;
   }
 
   return {
@@ -23,8 +23,8 @@ export const useUserSession = defineStore('userSession', () => {
     isLoggedIn,
     logoutUser,
     setUser,
-  } as const
-})
+  } as const;
+});
 
 /**
  * Pinia supports Hot Module replacement so you can edit your stores and
@@ -34,5 +34,5 @@ export const useUserSession = defineStore('userSession', () => {
  * @see https://vitejs.dev/guide/api-hmr.html
  */
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useUserSession, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(userSession, import.meta.hot));
 }
