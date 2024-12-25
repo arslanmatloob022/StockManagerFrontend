@@ -1,0 +1,1 @@
+import{e as s,g as a,j as o,q as t,x as n,a2 as e}from"../../index-BnGzoMia.js";const d=e(s({__name:"VButtons",props:{align:{default:void 0},addons:{type:Boolean}},setup(s){const e=s;return(s,d)=>(a(),o("div",{class:n(["buttons",[e.addons&&"has-addons",e.align&&`is-${e.align}`]])},[t(s.$slots,"default")],2))}}),[["__file","VButtons.vue"]]);export{d as _};

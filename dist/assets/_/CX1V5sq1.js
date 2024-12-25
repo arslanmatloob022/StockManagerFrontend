@@ -1,0 +1,1 @@
+import{a9 as a,o as s,aa as e,ai as n,b as t}from"../../index-BnGzoMia.js";function o(o,i={}){const r=a(null);return s((async()=>{if(o.value){const{tns:a}=await e((()=>import("./CH28lM7g.js")),[]);r.value=a({container:o.value,...n(i)})}})),t((()=>{r.value&&r.value.destroy()})),{slider:r}}export{o as u};

@@ -1,0 +1,1 @@
+import{a2 as e,z as r,g as a,A as s}from"../../index-BnGzoMia.js";/* empty css        */const t=e({},[["render",function(e,t){const n=r("RouterView");return a(),s(n)}],["__file","navbar.vue"]]);export{t as default};

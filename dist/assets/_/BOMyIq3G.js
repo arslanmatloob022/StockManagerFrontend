@@ -1,0 +1,1 @@
+import{e as s,g as t,j as a,q as e,x as i,a2 as o}from"../../index-BnGzoMia.js";const r=o(s({__name:"UIWidget",props:{straight:{type:Boolean}},setup(s){const o=s;return(s,r)=>(t(),a("div",{class:i(["widget",[o.straight&&"is-straight"]])},[e(s.$slots,"header"),e(s.$slots,"body")],2))}}),[["__file","UIWidget.vue"]]);export{r as _};

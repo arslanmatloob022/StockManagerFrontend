@@ -57,7 +57,7 @@ const links = ref<SideblockItem[]>([
     type: "link",
     label: "Stores",
     icon: "lucide:building",
-    to: "/sidebar/dashboards/stores",
+    to: "/sidebar/dashboards/our-stores",
   },
 
   // {

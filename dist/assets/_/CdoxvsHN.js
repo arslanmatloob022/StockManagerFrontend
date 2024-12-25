@@ -1,0 +1,1 @@
+import{_ as r}from"./SvWLrpfS.js";import{a2 as s,z as e,g as t,A as a,l as o,k as n}from"../../index-BnGzoMia.js";/* empty css        */const i=s({},[["render",function(s,i){const u=e("RouterView"),f=r;return t(),a(f,null,{default:o((()=>[n(u)])),_:1})}],["__file","error.vue"]]);export{i as default};

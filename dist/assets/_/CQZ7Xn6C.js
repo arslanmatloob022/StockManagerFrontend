@@ -1,0 +1,1 @@
+import{a as e,a5 as a,r as s}from"../../index-BnGzoMia.js";function u(u,l={clickOutside:!0}){const i=e(!1);l.clickOutside&&a(u,(()=>{i.value=!1}));return s({isOpen:i,open:()=>{i.value=!0},close:()=>{i.value=!1},toggle:()=>{i.value=!i.value}})}export{u};

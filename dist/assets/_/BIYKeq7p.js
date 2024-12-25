@@ -1,1 +1,0 @@
-import{d as t,b as r}from"../../index-BBZ1hd8o.js";function o(o,e={}){const s=t((()=>{}));return r((()=>{s()})),{onceError:n}}function n(t,r,o){const n=t.target;if(!n||!r)return;let e;e="string"==typeof r?r:`https://via.placeholder.com/${r}x${o??r}`,n.src=e}export{o as u};
