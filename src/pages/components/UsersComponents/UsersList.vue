@@ -122,7 +122,6 @@ onMounted(() => {
       </div>
     </div>
 
-    <!--List-->
     <div class="list-view list-view-v1">
       <VPlaceholderPage
         :class="[filteredData.length !== 0 && 'is-hidden']"
@@ -146,13 +145,8 @@ onMounted(() => {
         </template>
       </VPlaceholderPage>
 
-      <div class="list-view-inner">
-        <!--Item-->
-        <TransitionGroup
-          v-if="filteredData.length"
-          name="list-complete"
-          tag="div"
-        >
+      <div v-if="filteredData.length > 0" class="list-view-inner">
+        <TransitionGroup name="list-complete" tag="div">
           <div
             v-for="(item, key) in filteredData"
             :key="key"
@@ -260,14 +254,14 @@ onMounted(() => {
       :current-page="42"
       :max-links-displayed="5"
     />
+    <AddUpdateUser
+      v-if="openUserModal"
+      :openUserModal="openUserModal"
+      :userId="selectedUser"
+      @update:closeModalHandler="closeUserModal"
+      @update:callOnSuccess="getUsersList"
+    />
   </div>
-  <AddUpdateUser
-    v-if="openUserModal"
-    :openUserModal="openUserModal"
-    :userId="selectedUser"
-    @update:closeModalHandler="closeUserModal"
-    @update:callOnSuccess="getUsersList"
-  />
 </template>
 
 <style lang="scss">

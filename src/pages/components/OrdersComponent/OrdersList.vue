@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import type { VAvatarProps } from "/@src/components/base/VAvatar.vue";
 import * as listData from "/@src/data/layouts/flex-list-v2";
+import {
+  valueSingle,
+  optionsSingle,
+  flexRowsOrders,
+} from "/@src/data/dashboards/ecommerce/dashboardData";
 
 export interface ProjectData {
   id: number;
@@ -29,17 +34,14 @@ const tab = ref(props.activeTab);
 
 const columns = {
   picture: {
-    label: "Project",
+    label: "Client",
     grow: true,
     media: true,
   },
-  customer: "Customer",
-  industry: "Industry",
+  customer: "Shop Name",
+  industry: "Items",
   status: "Status",
-  team: {
-    label: "Team",
-    cellClass: "h-hidden-tablet-p",
-  },
+
   actions: {
     label: "Actions",
     align: "end",
@@ -67,147 +69,109 @@ const filteredData = computed(() => {
 
 <template>
   <div>
-    <div class="list-flex-toolbar is-reversed">
-      <VControl icon="lucide:search">
-        <input
-          v-model="filters"
-          class="input custom-text-filter"
-          placeholder="Search..."
-        />
-      </VControl>
-
-      <div class="tabs-inner">
-        <VTabs
-          v-model:selected="tab"
-          slider
-          align="centered"
-          :tabs="[
-            {
-              label: 'Active',
-              value: 'active',
-            },
-            {
-              label: 'Closed',
-              value: 'closed',
-            },
-          ]"
-        />
+    <div class="is-flex space-between">
+      <div class="is-flex">
+        <VControl icon="lucide:search">
+          <input
+            v-model="filters"
+            class="input custom-text-filter"
+            placeholder="Search..."
+          />
+        </VControl>
+        <VField class="is-minimal-select dd-width ml-2">
+          <VControl>
+            <Multiselect
+              v-model="valueSingle"
+              :options="optionsSingle"
+              placeholder="Select an option"
+              :max-height="145"
+            />
+          </VControl>
+        </VField>
       </div>
+      <VButton color="info" raised elevated> Place New Order</VButton>
     </div>
 
-    <div class="flex-list-wrapper flex-list-v2">
-      <!--List Empty Search Placeholder -->
-      <VPlaceholderPage
-        v-if="tab === 'active' && filteredData.length === 0"
-        title="We couldn't find any matching results."
-        subtitle="Too bad. Looks like we couldn't find any matching results for the
-          search terms you've entered. Please try different search terms or
-          criteria."
-        larger
+    <div class="column is-12">
+      <div class="table-header">
+        <h3 class="dark-inverted">Recent Orders</h3>
+      </div>
+
+      <VFlexTable
+        rounded
+        :data="flexRowsOrders"
+        :columns="{
+          picture: {
+            label: 'Customer',
+            media: true,
+            grow: true,
+          },
+          date: 'Date',
+          amount: 'Amount',
+          status: 'Status',
+          tracking: 'Tracking',
+          actions: {
+            label: 'Actions',
+            align: 'end',
+          },
+        }"
       >
-        <template #image>
-          <img
-            class="light-image"
-            src="/images/illustrations/placeholders/search-4.svg"
-            alt=""
-          />
-          <img
-            class="dark-image"
-            src="/images/illustrations/placeholders/search-4-dark.svg"
-            alt=""
-          />
+        <template #body-cell="{ row, column, value }">
+          <template v-if="column.key === 'picture'">
+            <VAvatar :picture="row.picture" size="medium" squared />
+            <div>
+              <span class="item-name dark-inverted is-font-alt is-weight-600">{{
+                row.username
+              }}</span>
+              <span class="item-meta">
+                <span>{{ row.orderId }}</span>
+              </span>
+            </div>
+          </template>
+          <template v-else-if="column.key === 'amount'">
+            <span class="dark-inverted is-weight-600">${{ row.amount }}</span>
+          </template>
+          <template v-else-if="column.key === 'status'">
+            <VTag
+              v-if="row.status === 'paid'"
+              color="green"
+              rounded
+              label="Paid"
+            />
+            <VTag
+              v-if="row.status === 'pending'"
+              color="orange"
+              rounded
+              label="Pending"
+            />
+          </template>
+          <template v-else-if="column.key === 'tracking'">
+            <a
+              v-if="row.tracking"
+              tabindex="0"
+              class="action-link is-pushed-mobile"
+            >
+              {{ row.tracking }}
+            </a>
+            <span v-else class="light-text is-pushed-mobile">N/A</span>
+          </template>
+          <template v-else-if="column.key === 'actions'">
+            <VButton class="is-pushed-mobile" dark-outlined>
+              View Order
+            </VButton>
+          </template>
+
+          <span v-else class="light-text">{{ value }}</span>
         </template>
-      </VPlaceholderPage>
-
-      <div v-if="tab === 'active'" class="tab-content is-active">
-        <VFlexTable
-          v-if="filteredData.length"
-          :data="filteredData"
-          :columns="columns"
-          rounded
-        >
-          <template #body>
-            <TransitionGroup name="list" tag="div" class="flex-list-inner">
-              <!--Table item-->
-              <div
-                v-for="item in filteredData"
-                :key="item.id"
-                class="flex-table-item"
-              >
-                <VFlexTableCell :column="{ media: true, grow: true }">
-                  <VAvatar :picture="item.picture" />
-                  <div>
-                    <span class="item-name dark-inverted">{{ item.name }}</span>
-                    <span class="item-meta">
-                      <span>
-                        <VIcon icon="lucide:clock" />{{ item.duration }}</span
-                      >
-                    </span>
-                  </div>
-                </VFlexTableCell>
-                <VFlexTableCell>
-                  <span class="light-text">{{ item.customer }}</span>
-                </VFlexTableCell>
-                <VFlexTableCell>
-                  <span class="light-text">{{ item.industry }}</span>
-                </VFlexTableCell>
-                <VFlexTableCell>
-                  <VTag rounded>
-                    {{ item.status }}
-                  </VTag>
-                </VFlexTableCell>
-                <VFlexTableCell class="h-hidden-tablet-p">
-                  <VAvatarStack
-                    :avatars="item.team"
-                    size="small"
-                    :limit="3"
-                    class="is-pushed-mobile"
-                  />
-                </VFlexTableCell>
-                <VFlexTableCell :column="{ align: 'end' }">
-                  <ProjectListDropdown />
-                </VFlexTableCell>
-              </div>
-            </TransitionGroup>
-          </template>
-        </VFlexTable>
-
-        <!--Table Pagination-->
-        <VFlexPagination
-          v-if="filteredData.length > 5"
-          :item-per-page="10"
-          :total-items="873"
-          :current-page="42"
-          :max-links-displayed="7"
-        />
-      </div>
-
-      <div v-else-if="tab === 'closed'" class="tab-content is-active">
-        <!--Empty placeholder-->
-        <VPlaceholderPage
-          title="No closed projects."
-          subtitle="Looks like you don't have any closed project yet. When you'll
-              start closing off projects, they will be showing up in here."
-        >
-          <template #image>
-            <img
-              class="light-image is-larger"
-              src="/images/illustrations/placeholders/projects.svg"
-              alt=""
-            />
-            <img
-              class="dark-image is-larger"
-              src="/images/illustrations/placeholders/projects-dark.svg"
-              alt=""
-            />
-          </template>
-        </VPlaceholderPage>
-      </div>
+      </VFlexTable>
     </div>
   </div>
 </template>
 
 <style lang="scss">
+.dd-width {
+  min-width: 180px;
+}
 .has-top-nav {
   .flex-list-wrapper,
   .list-flex-toolbar {

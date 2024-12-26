@@ -240,6 +240,7 @@ declare module 'vue-router/auto-routes' {
     '/sidebar/dashboards/influencer': RouteRecordInfo<'/sidebar/dashboards/influencer', '/sidebar/dashboards/influencer', Record<never, never>, Record<never, never>>,
     '/sidebar/dashboards/jobs': RouteRecordInfo<'/sidebar/dashboards/jobs', '/sidebar/dashboards/jobs', Record<never, never>, Record<never, never>>,
     '/sidebar/dashboards/orders/': RouteRecordInfo<'/sidebar/dashboards/orders/', '/sidebar/dashboards/orders', Record<never, never>, Record<never, never>>,
+    '/sidebar/dashboards/orders/place-order/': RouteRecordInfo<'/sidebar/dashboards/orders/place-order/', '/sidebar/dashboards/orders/place-order', Record<never, never>, Record<never, never>>,
     '/sidebar/dashboards/our-stores/': RouteRecordInfo<'/sidebar/dashboards/our-stores/', '/sidebar/dashboards/our-stores', Record<never, never>, Record<never, never>>,
     '/sidebar/dashboards/personal-2': RouteRecordInfo<'/sidebar/dashboards/personal-2', '/sidebar/dashboards/personal-2', Record<never, never>, Record<never, never>>,
     '/sidebar/dashboards/personal-3': RouteRecordInfo<'/sidebar/dashboards/personal-3', '/sidebar/dashboards/personal-3', Record<never, never>, Record<never, never>>,

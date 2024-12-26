@@ -12,5 +12,7 @@ useHead({
 </script>
 
 <template>
-  <UsersList />
+  <div>
+    <UsersList />
+  </div>
 </template>
