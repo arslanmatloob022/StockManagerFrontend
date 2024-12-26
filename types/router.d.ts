@@ -42,6 +42,8 @@ declare module 'vue-router/auto-routes' {
     '/components/animated-checkbox': RouteRecordInfo<'/components/animated-checkbox', '/components/animated-checkbox', Record<never, never>, Record<never, never>>,
     '/components/avatar/': RouteRecordInfo<'/components/avatar/', '/components/avatar', Record<never, never>, Record<never, never>>,
     '/components/avatar/stack': RouteRecordInfo<'/components/avatar/stack', '/components/avatar/stack', Record<never, never>, Record<never, never>>,
+    '/components/Batch/AddUpdateBatch': RouteRecordInfo<'/components/Batch/AddUpdateBatch', '/components/Batch/AddUpdateBatch', Record<never, never>, Record<never, never>>,
+    '/components/Batch/BatchList': RouteRecordInfo<'/components/Batch/BatchList', '/components/Batch/BatchList', Record<never, never>, Record<never, never>>,
     '/components/block': RouteRecordInfo<'/components/block', '/components/block', Record<never, never>, Record<never, never>>,
     '/components/breadcrumb': RouteRecordInfo<'/components/breadcrumb', '/components/breadcrumb', Record<never, never>, Record<never, never>>,
     '/components/button': RouteRecordInfo<'/components/button', '/components/button', Record<never, never>, Record<never, never>>,

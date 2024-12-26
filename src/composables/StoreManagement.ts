@@ -5,23 +5,26 @@ import { useNotyf } from "/@src/composables/notyf";
 export function useStoreManagement() {
   const notyf = useNotyf();
   const api = useApi();
-
+  const loading=ref(false)
   const filters = ref("");
-  const modalOpen = ref(false); // Control the modal visibility
-  const selectedProject = ref<any>(null); // Store the current store for editing or adding
-  const storeList = ref([]); // Holds data from the API
+  const modalOpen = ref(false); 
+  const selectedProject = ref<any>(null); 
+  const storeList = ref([]);
 
-  // Fetch the store list from the API
+ 
   const fetchStoreList = async () => {
+    loading.value=true;
     try {
       const response = await api.get("/store/"); // Adjust the endpoint if needed
       storeList.value = response.data;
+      setTimeout(() => {
+        loading.value=false;
+      }, 15000);
     } catch (error) {
       console.error("Error fetching stores:", error);
     }
   };
 
-  // Call the API on component mount
   onMounted(() => {
     fetchStoreList();
   });
@@ -67,10 +70,11 @@ export function useStoreManagement() {
     modalOpen,
     selectedProject,
     storeList,
+    loading,
+    filteredData,
     fetchStoreList,
     openAddModal,
     openEditModal,
-    filteredData,
     DeleteStore,
   };
 }

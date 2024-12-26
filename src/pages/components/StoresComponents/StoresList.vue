@@ -4,6 +4,7 @@ import StoreModal from "./StoreModal.vue";
 
 const {
   filters,
+  loading,
   modalOpen,
   selectedProject,
   storeList,
@@ -17,7 +18,7 @@ const {
 
 <template>
   <div>
-    <div class="card-grid-toolbar">
+    <div class="card-grid-toolbar" >
       <VControl icon="lucide:search">
         <input
           v-model="filters"
@@ -35,7 +36,7 @@ const {
       </div>
     </div>
 
-    <div class="card-grid card-grid-v3">
+    <div class="card-grid card-grid-v3" v-if="!loading">
       <VPlaceholderPage
         :class="[filteredData.length !== 0 && 'is-hidden']"
         title="No matching stores found."
@@ -56,11 +57,7 @@ const {
         </template>
       </VPlaceholderPage>
 
-      <TransitionGroup
-        name="list"
-        tag="div"
-        class="columns is-multiline is-flex-tablet-p is-half-tablet-p"
-      >
+      <div class="columns is-multiline">
         <div v-for="store in filteredData" :key="store.id" class="column is-4">
           <div class="card-grid-item">
             <h3 class="dark-inverted">{{ store?.name }}</h3>
@@ -90,9 +87,10 @@ const {
             </div>
           </div>
         </div>
-      </TransitionGroup>
+      </div>
+        
+      
     </div>
-
     <StoreModal
       :modalOpen="modalOpen"
       :project="selectedProject"
