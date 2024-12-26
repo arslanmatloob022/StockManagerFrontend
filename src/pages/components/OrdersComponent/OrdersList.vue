@@ -7,6 +7,7 @@ import {
   flexRowsOrders,
 } from "/@src/data/dashboards/ecommerce/dashboardData";
 
+const router = useRouter();
 export interface ProjectData {
   id: number;
   name: string;
@@ -89,7 +90,14 @@ const filteredData = computed(() => {
           </VControl>
         </VField>
       </div>
-      <VButton color="info" raised elevated> Place New Order</VButton>
+      <VButton
+        @click="router.push('/sidebar/dashboards/orders/place-order')"
+        color="info"
+        raised
+        elevated
+      >
+        Place New Order</VButton
+      >
     </div>
 
     <div class="column is-12">
