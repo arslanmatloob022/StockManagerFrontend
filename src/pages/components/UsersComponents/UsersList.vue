@@ -124,7 +124,6 @@ onMounted(() => {
 
     <!--List-->
     <div class="list-view list-view-v1">
-      <!--List Empty Search Placeholder -->
       <VPlaceholderPage
         :class="[filteredData.length !== 0 && 'is-hidden']"
         title="We couldn't find any matching results."
@@ -149,7 +148,11 @@ onMounted(() => {
 
       <div class="list-view-inner">
         <!--Item-->
-        <TransitionGroup name="list-complete" tag="div">
+        <TransitionGroup
+          v-if="filteredData.length"
+          name="list-complete"
+          tag="div"
+        >
           <div
             v-for="(item, key) in filteredData"
             :key="key"

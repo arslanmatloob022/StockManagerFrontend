@@ -45,8 +45,8 @@ export function useStoreManagement() {
     } else {
       return storeList.value.filter(
         (item) =>
-          item.name.match(new RegExp(filters.value, "i")) ||
-          item.email.match(new RegExp(filters.value, "i"))
+          item?.name.match(new RegExp(filters.value, "i")) ||
+          item?.email.match(new RegExp(filters.value, "i"))
       );
     }
   });
@@ -66,11 +66,11 @@ export function useStoreManagement() {
     filters,
     modalOpen,
     selectedProject,
+    filteredData,
     storeList,
     fetchStoreList,
     openAddModal,
     openEditModal,
-    filteredData,
     DeleteStore,
   };
 }
