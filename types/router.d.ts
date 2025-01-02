@@ -87,6 +87,7 @@ declare module 'vue-router/auto-routes' {
     '/components/modal': RouteRecordInfo<'/components/modal', '/components/modal', Record<never, never>, Record<never, never>>,
     '/components/OrdersComponent/OrdersList': RouteRecordInfo<'/components/OrdersComponent/OrdersList', '/components/OrdersComponent/OrdersList', Record<never, never>, Record<never, never>>,
     '/components/OrdersComponent/PlaceOrderComponent': RouteRecordInfo<'/components/OrdersComponent/PlaceOrderComponent', '/components/OrdersComponent/PlaceOrderComponent', Record<never, never>, Record<never, never>>,
+    '/components/OrdersComponent/PlaceOrderInfoModal': RouteRecordInfo<'/components/OrdersComponent/PlaceOrderInfoModal', '/components/OrdersComponent/PlaceOrderInfoModal', Record<never, never>, Record<never, never>>,
     '/components/pagination': RouteRecordInfo<'/components/pagination', '/components/pagination', Record<never, never>, Record<never, never>>,
     '/components/placeholder-page': RouteRecordInfo<'/components/placeholder-page', '/components/placeholder-page', Record<never, never>, Record<never, never>>,
     '/components/placeholder-section': RouteRecordInfo<'/components/placeholder-section', '/components/placeholder-section', Record<never, never>, Record<never, never>>,

@@ -4,7 +4,9 @@ import { useNotyf } from "/@src/composables/notyf";
 import { convertToFormData } from "/@src/commonScripts/commonComponents";
 import { useStore } from "/@src/stores/useStore";
 import { onMounted } from "vue";
+import { useProducts } from "/@src/stores/products";
 
+const products = useProducts();
 const notyf = useNotyf();
 const api = useApi();
 const loading = ref(false);
@@ -43,6 +45,7 @@ interface ProductData {
   quantity: string;
   tag: string[];
   store: string;
+  // image: null | File | String;
 }
 
 const productDataModel = ref<ProductData>({
@@ -51,7 +54,9 @@ const productDataModel = ref<ProductData>({
   price: "",
   quantity: "",
   tag: [],
-  store: store.loggedStore.id,
+  // store: store.loggedStore.id,
+  store: "90fea8e0-4b77-4b87-b638-70b4f7f23b60",
+  // image: null,
 });
 
 // Fetch product data if editing
@@ -63,7 +68,7 @@ const fetchProductData = async () => {
     const { data } = await api.get(`/product/${props.productId}/`);
     productDataModel.value = {
       ...data,
-      tag: Array.isArray(data.tag) ? data.tag :data.tag, // Ensure tag is an array
+      tag: Array.isArray(data.tag) ? data.tag : data.tag, // Ensure tag is an array
       store: data.store || store.loggedStore.id,
     };
     tagsOptions.value = data.tag;
@@ -75,31 +80,17 @@ const fetchProductData = async () => {
   }
 };
 
-onMounted(() => {
-  if (props.productId) {
-    fetchProductData();
-  }
-});
-
 const addUpdateUserHandler = async () => {
   try {
     loading.value = true;
 
     const payload = {
       ...productDataModel.value,
-      tag: JSON.stringify(productDataModel.value.tag), // Convert tag array to JSON string
+      tag: JSON.stringify(productDataModel.value.tag),
     };
 
-    if (props.productId) {
-      // Update product
-      await api.patch(`/product/${props.productId}/`, convertToFormData(payload, ""));
-      notyf.success("Product updated successfully");
-    } else {
-      // Add product
-      await api.post("/product/", convertToFormData(payload, ""));
-      notyf.success("Product added successfully");
-    }
-
+    const ProductData = convertToFormData(payload, "image");
+    products.addProduct(ProductData);
     closeModalHandler();
     callOnSuccessHandler();
   } catch (err) {
@@ -109,6 +100,32 @@ const addUpdateUserHandler = async () => {
     loading.value = false;
   }
 };
+const onAddFile = (error: any, fileInfo: any) => {
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const _file = fileInfo.file as File;
+  if (_file) {
+    productDataModel.value.image = _file;
+  }
+};
+
+const onRemoveFile = (error: any, fileInfo: any) => {
+  if (error) {
+    console.error(error);
+    return;
+  }
+  console.log(fileInfo);
+  productDataModel.value.image = null;
+};
+
+onMounted(() => {
+  if (props.productId) {
+    fetchProductData();
+  }
+});
 </script>
 
 <template>
@@ -123,26 +140,54 @@ const addUpdateUserHandler = async () => {
   >
     <template #content>
       <div class="columns is-multiline">
-        <VField class="column is-6">
-          <VLabel>Product Name</VLabel>
-          <VControl>
-            <VInput
-              v-model="productDataModel.name"
-              type="text"
-              placeholder="Product Name"
-            />
-          </VControl>
-        </VField>
-        <VField class="column is-6">
-          <VLabel>Price (Unit)</VLabel>
-          <VControl>
-            <VInput
-              v-model="productDataModel.price"
-              type="number"
-              placeholder="Unit Price"
-            />
-          </VControl>
-        </VField>
+        <div class="column is-6">
+          <div class="columns is-multiline">
+            <VField class="column is-12">
+              <VLabel>Product Name</VLabel>
+              <VControl>
+                <VInput
+                  v-model="productDataModel.name"
+                  type="text"
+                  placeholder="Product Name"
+                />
+              </VControl>
+            </VField>
+            <VField class="column is-12">
+              <VLabel>Price (Unit)</VLabel>
+              <VControl>
+                <VInput
+                  v-model="productDataModel.price"
+                  type="number"
+                  placeholder="Unit Price"
+                />
+              </VControl>
+            </VField>
+          </div>
+        </div>
+        <div class="column is-6">
+          <VField label="Product Image">
+            <VControl>
+              <VFilePond
+                class="profile-filepond"
+                name="profile_filepond"
+                :chunk-retry-delays="[500, 1000, 3000]"
+                label-idle="<i class='lnil lnil-cloud-upload'></i>"
+                :accepted-file-types="['image/png', 'image/jpeg', 'image/gif']"
+                :image-preview-height="140"
+                :image-resize-target-width="140"
+                :image-resize-target-height="140"
+                image-crop-aspect-ratio="1:1"
+                style-panel-layout="compact circle"
+                style-load-indicator-position="center bottom"
+                style-progress-indicator-position="right bottom"
+                style-button-remove-item-position="left bottom"
+                style-button-process-item-position="right bottom"
+                @addfile="onAddFile"
+                @removefile="onRemoveFile"
+              />
+            </VControl>
+          </VField>
+        </div>
 
         <VField class="column is-6">
           <VLabel>Quantity</VLabel>

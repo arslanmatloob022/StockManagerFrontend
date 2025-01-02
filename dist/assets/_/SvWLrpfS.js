@@ -1,1 +1,0 @@
-import{e as a,g as s,j as e,q as t,x as i,a2 as r}from"../../index-BnGzoMia.js";/* empty css        */const m=r(a({__name:"MinimalLayout",props:{theme:{default:"darker"}},setup(a){const r=a;return(a,m)=>(s(),e("div",{class:i(["minimal-wrapper",[r.theme]])},[t(a.$slots,"default")],2))}}),[["__file","MinimalLayout.vue"]]);export{m as _};

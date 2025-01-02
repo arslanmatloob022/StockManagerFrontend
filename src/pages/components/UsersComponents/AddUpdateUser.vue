@@ -57,7 +57,7 @@ const userDataModel = ref<UserData>({
   is_active: false,
   is_staff: false,
   is_superuser: false,
-  store: store.loggedStore.id,
+  store: "90fea8e0-4b77-4b87-b638-70b4f7f23b60",
 });
 
 const userRoles = ref([
@@ -97,8 +97,19 @@ const addUpdateUserHandler = async () => {
 const getUserDetail = async () => {
   try {
     loading.value = true;
-    const resp = await api.get(`/user/${props.userId}`);
+    const resp = await api.get(`/user/${props.userId}/`);
     userDataModel.value = resp.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const storesList = ref([]);
+const getStores = async () => {
+  try {
+    loading.value = true;
+    const resp = await api.get(`/store/${props.userId}`);
+    storesList.value = resp.data;
   } catch (err) {
     console.log(err);
   }
@@ -108,6 +119,7 @@ onMounted(() => {
   if (props.userId) {
     getUserDetail();
   }
+  getStores();
 });
 </script>
 
@@ -198,6 +210,20 @@ onMounted(() => {
               v-model="userDataModel.is_staff"
               label="Staff"
             />
+          </VControl>
+        </VField>
+        <VField class="column is-6">
+          <VControl>
+            <VSelect v-model="userDataModel.store" class="is-rounded">
+              <VOption value=""> Select a Store </VOption>
+              <VOption
+                v-for="store in storesList"
+                :key="store.id"
+                :value="store.id"
+              >
+                {{ store.name }}
+              </VOption>
+            </VSelect>
           </VControl>
         </VField>
       </div>

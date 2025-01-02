@@ -1,1 +1,0 @@
-import{ar as e,a4 as n}from"../../index-BnGzoMia.js";const a=e("panels",(()=>{const e=n("active-panel","none");return{active:e,setActive:function(n){e.value=n},close:function(){e.value="none"}}}));export{a as u};

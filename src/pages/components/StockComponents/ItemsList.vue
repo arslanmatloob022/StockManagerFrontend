@@ -3,7 +3,8 @@ import AddUpdateProduct from "./AddUpdateProduct.vue";
 import { useApi } from "/@src/composables/useApi";
 import { useNotyf } from "/@src/composables/notyf";
 import { ref, computed, onMounted } from "vue";
-
+import { useProducts } from "/@src/stores/products";
+const productsStore = useProducts();
 export interface Product {
   id: string;
   name: string;
@@ -12,19 +13,22 @@ export interface Product {
   quantity: string;
   tag: string[];
   store: string;
+  image: null | File | string;
 }
 
 const api = useApi();
 const notyf = useNotyf();
-const products = ref<Product[]>([]);
+// const products = ref<Product[]>([]);
+const products = ref(<any>[]);
 const addProductModal = ref(false);
-const currentProductId = ref<string | null>(null); // Store the product ID being edited
+const currentProductId = ref(""); // Store the product ID being edited
 const filters = ref("");
 
 const fetchProducts = async () => {
   try {
-    const resp = await api.get("/product/");
-    products.value = resp.data;
+    // const resp = await api.get("/product/");
+    await productsStore.getStoreProducts();
+    products.value = productsStore.productList;
   } catch (error) {
     console.error("Error fetching products:", error);
     notyf.error("Failed to fetch products.");
@@ -34,7 +38,9 @@ const fetchProducts = async () => {
 const deleteProduct = async (productId: string) => {
   try {
     await api.delete(`/product/${productId}/`);
-    products.value = products.value.filter((product) => product.id !== productId);
+    products.value = products.value.filter(
+      (product) => product.id !== productId
+    );
     notyf.success("Product deleted successfully.");
   } catch (error) {
     console.error("Error deleting product:", error);
@@ -60,7 +66,9 @@ const handleSuccess = async () => {
   await fetchProducts();
 };
 
-onMounted(fetchProducts);
+onMounted(() => {
+  fetchProducts();
+});
 </script>
 
 <template>
@@ -76,7 +84,12 @@ onMounted(fetchProducts);
 
       <div class="buttons">
         <VButton
-          @click="() => { addProductModal = true; currentProductId = null; }"
+          @click="
+            () => {
+              addProductModal = true;
+              currentProductId = null;
+            }
+          "
           color="primary"
           raised
         >
@@ -101,7 +114,11 @@ onMounted(fetchProducts);
       </VPlaceholderPage>
 
       <TransitionGroup name="list" tag="div" class="columns is-multiline">
-        <div v-for="product in filteredData" :key="product.id" class="column is-4">
+        <div
+          v-for="product in filteredData"
+          :key="product.id"
+          class="column is-4"
+        >
           <div class="card-grid-item">
             <div class="card hover-card">
               <header class="card-header">
@@ -109,10 +126,21 @@ onMounted(fetchProducts);
                   {{ product.name }}
                 </h3>
                 <div class="card-header-icon buttons-container">
-                  <VButton icon color="info" rounded @click="handleEditProduct(product.id)">
+                  <VButton
+                    icon
+                    color="info"
+                    rounded
+                    @click="handleEditProduct(product.id)"
+                  >
                     <i class="fas fa-edit"></i>
                   </VButton>
-                  <VButton icon color="danger" rounded class="ml-2" @click="deleteProduct(product.id)">
+                  <VButton
+                    icon
+                    color="danger"
+                    rounded
+                    class="ml-2"
+                    @click="deleteProduct(product.id)"
+                  >
                     <i class="fas fa-trash"></i>
                   </VButton>
                 </div>
@@ -132,19 +160,25 @@ onMounted(fetchProducts);
                     <span class="info-value">{{ product.tag.join(", ") }}</span>
                   </div>
                   <p class="description">
-                    {{ product.description?.slice(0,100) || "No description available." }}
+                    {{
+                      product.description?.slice(0, 100) ||
+                      "No description available."
+                    }}
                   </p>
                 </div>
               </div>
               <footer class="card-footer">
-                <a href="#" class="card-footer-item has-text-primary">View Details</a>
+                <a href="#" class="card-footer-item has-text-primary"
+                  >View Details</a
+                >
               </footer>
             </div>
           </div>
         </div>
       </TransitionGroup>
     </div>
-    <AddUpdateProduct v-if="addProductModal"
+    <AddUpdateProduct
+      v-if="addProductModal"
       :open-product-modal="addProductModal"
       :product-id="currentProductId"
       @update:close-modal-handler="addProductModal = false"
@@ -152,7 +186,6 @@ onMounted(fetchProducts);
     />
   </div>
 </template>
-
 
 <style lang="scss">
 .card-grid {
@@ -310,7 +343,9 @@ onMounted(fetchProducts);
 .card {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .card:hover {

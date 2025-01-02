@@ -1,97 +1,95 @@
 <script setup lang="ts">
-import { type VNode } from 'vue'
-import { flewTableWrapperSymbol } from './VFlexTableWrapper.vue'
+import { type VNode } from "vue";
+import { flewTableWrapperSymbol } from "./VFlexTableWrapper.vue";
 
 export interface VFlexTableColumn {
-  key: string
-  label: string
-  format: (value: any, row: any, index: number) => any
-  renderHeader?: () => VNode
-  renderRow?: (row: any, column: VFlexTableColumn, index: number) => VNode
-  align?: 'start' | 'center' | 'end'
-  bold?: boolean
-  inverted?: boolean
-  scrollX?: boolean
-  scrollY?: boolean
-  grow?: boolean | 'lg' | 'xl'
-  media?: boolean
-  cellClass?: string
+  key: string;
+  label: string;
+  format: (value: any, row: any, index: number) => any;
+  remove: (value: any, row: any, index: number) => any;
+  renderHeader?: () => VNode;
+  renderRow?: (row: any, column: VFlexTableColumn, index: number) => VNode;
+  align?: "start" | "center" | "end";
+  bold?: boolean;
+  inverted?: boolean;
+  scrollX?: boolean;
+  scrollY?: boolean;
+  grow?: boolean | "lg" | "xl";
+  media?: boolean;
+  cellClass?: string;
 }
 
 export interface VFlexTableProps {
-  data?: any[]
-  columns?: Record<string, string | Partial<VFlexTableColumn>>
-  printObjects?: boolean
-  reactive?: boolean
-  compact?: boolean
-  rounded?: boolean
-  separators?: boolean
-  clickable?: boolean
-  subtable?: boolean
-  noHeader?: boolean
+  data?: any[];
+  columns?: Record<string, string | Partial<VFlexTableColumn>>;
+  printObjects?: boolean;
+  reactive?: boolean;
+  compact?: boolean;
+  rounded?: boolean;
+  separators?: boolean;
+  clickable?: boolean;
+  subtable?: boolean;
+  noHeader?: boolean;
 }
 
 const emits = defineEmits<{
-  (e: 'rowClick', row: any, index: number): void
-}>()
+  (e: "rowClick", row: any, index: number): void;
+}>();
 const props = withDefaults(defineProps<VFlexTableProps>(), {
   columns: undefined,
   data: () => [],
-})
+});
 
-const wrapper = inject(flewTableWrapperSymbol, null)
+const wrapper = inject(flewTableWrapperSymbol, null);
 
 const data = computed(() => {
-  if (wrapper?.data) return wrapper.data
+  if (wrapper?.data) return wrapper.data;
 
   if (props.reactive) {
     if (isReactive(props.data)) {
-      return props.data
-    }
-    else {
-      return reactive(props.data)
+      return props.data;
+    } else {
+      return reactive(props.data);
     }
   }
 
-  return toRaw(props.data)
-})
+  return toRaw(props.data);
+});
 
-const defaultFormatter = (value: any) => value
+const defaultFormatter = (value: any) => value;
 const columns = computed(() => {
-  const columnsSrc = wrapper?.columns ?? props.columns
-  let columns: VFlexTableColumn[] = []
+  const columnsSrc = wrapper?.columns ?? props.columns;
+  let columns: VFlexTableColumn[] = [];
 
   if (columnsSrc) {
     for (const [key, label] of Object.entries(columnsSrc)) {
-      if (typeof label === 'string') {
+      if (typeof label === "string") {
         columns.push({
           format: defaultFormatter,
           label,
           key,
-        })
-      }
-      else {
+        });
+      } else {
         columns.push({
           format: defaultFormatter,
           label: key,
           key,
           ...(label as any),
-        })
+        });
       }
     }
-  }
-  else if (data.value.length > 0) {
+  } else if (data.value.length > 0) {
     for (const [key] of Object.entries(data.value[0])) {
       columns.push({
         format: defaultFormatter,
         label: key,
         key,
-      })
+      });
     }
   }
 
-  return columns
-})
+  return columns;
+});
 </script>
 
 <template>
@@ -107,18 +105,9 @@ const columns = computed(() => {
     ]"
   >
     <slot name="header">
-      <div
-        v-if="!props.noHeader"
-        class="flex-table-header"
-      >
-        <template
-          v-for="column in columns"
-          :key="'col' + column.key"
-        >
-          <slot
-            name="header-column"
-            :column="column"
-          >
+      <div v-if="!props.noHeader" class="flex-table-header">
+        <template v-for="column in columns" :key="'col' + column.key">
+          <slot name="header-column" :column="column">
             <component
               :is="{ render: column.renderHeader } as any"
               v-if="column.renderHeader"
@@ -139,23 +128,20 @@ const columns = computed(() => {
                 column.align === 'end' && 'cell-end',
                 column.align === 'center' && 'cell-center',
               ]"
-            >{{ column.label }}</span>
+              >{{ column.label }}</span
+            >
           </slot>
         </template>
       </div>
     </slot>
     <slot name="body">
-      <template
-        v-for="(row, index) in data"
-        :key="index"
-      >
+      <template v-for="(row, index) in data" :key="index">
         <slot
           name="body-row-pre"
           :row="row"
           :columns="columns"
           :index="index"
         />
-        <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
         <div
           class="flex-table-item"
           :class="[props.clickable && 'is-clickable']"
@@ -163,25 +149,17 @@ const columns = computed(() => {
           :role="props.clickable ? 'button' : undefined"
           @keydown.enter.prevent="
             () => {
-              props.clickable && emits('rowClick', row, index)
+              props.clickable && emits('rowClick', row, index);
             }
           "
           @click="
             () => {
-              props.clickable && emits('rowClick', row, index)
+              props.clickable && emits('rowClick', row, index);
             }
           "
         >
-          <slot
-            name="body-row"
-            :row="row"
-            :columns="columns"
-            :index="index"
-          >
-            <template
-              v-for="column in columns"
-              :key="'row' + column.key"
-            >
+          <slot name="body-row" :row="row" :columns="columns" :index="index">
+            <template v-for="column in columns" :key="'row' + column.key">
               <VFlexTableCell :column="column">
                 <slot
                   name="body-cell"
@@ -190,36 +168,32 @@ const columns = computed(() => {
                   :index="index"
                   :value="column.format(row[column.key], row, index)"
                 >
-                  <component
-                    :is="
-                      {
-                        render: () => column.renderRow?.(row, column, index),
-                      } as any
-                    "
-                    v-if="column.renderRow"
-                  />
+                  <!-- If remove action is defined -->
                   <span
-                    v-else-if="
-                      typeof column.format(row[column.key], row, index) === 'object'
-                    "
+                    v-if="column.remove"
                     :class="[
                       column.cellClass,
                       column.inverted && 'dark-inverted',
-                      !column.inverted && (column.bold ? 'dark-text' : 'light-text'),
+                      !column.inverted &&
+                        (column.bold ? 'dark-text' : 'light-text'),
                     ]"
                   >
-                    <details v-if="printObjects">
-                      <div class="language-json py-4">
-                        <pre><code>{{ column.format(row[column.key], row, index) }}</code></pre>
-                      </div>
-                    </details>
+                    <i
+                      @click="
+                        () => column.remove?.(row[column.key], row, index)
+                      "
+                      class="fas fa-trash"
+                      style="cursor: pointer; color: red"
+                    ></i>
                   </span>
+                  <!-- Default content -->
                   <span
                     v-else
                     :class="[
                       column.cellClass,
                       column.inverted && 'dark-inverted',
-                      !column.inverted && (column.bold ? 'dark-text' : 'light-text'),
+                      !column.inverted &&
+                        (column.bold ? 'dark-text' : 'light-text'),
                     ]"
                   >
                     {{ column.format(row[column.key], row, index) }}
@@ -414,7 +388,8 @@ const columns = computed(() => {
     .flex-table-item {
       .flex-table-cell {
         &:not(:first-of-type) {
-          border-inline-start: dashed 1px color-mix(in oklab, var(--fade-grey), black 3%);
+          border-inline-start: dashed 1px
+            color-mix(in oklab, var(--fade-grey), black 3%);
         }
       }
     }
@@ -438,7 +413,8 @@ const columns = computed(() => {
       .flex-table-item {
         .flex-table-cell {
           &:not(:first-of-type) {
-            border-inline-start: dashed 1px color-mix(in oklab, var(--dark-sidebar), white 12%);
+            border-inline-start: dashed 1px
+              color-mix(in oklab, var(--dark-sidebar), white 12%);
           }
         }
       }
@@ -448,7 +424,11 @@ const columns = computed(() => {
       .flex-table-item {
         &:hover,
         &:focus-within {
-          background: color-mix(in oklab, var(--dark-sidebar), white 12%) !important;
+          background: color-mix(
+            in oklab,
+            var(--dark-sidebar),
+            white 12%
+          ) !important;
         }
       }
     }

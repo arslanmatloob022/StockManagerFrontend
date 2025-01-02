@@ -1,1 +1,0 @@
-import{a2 as e,z as r,g as s,A as t}from"../../index-BnGzoMia.js";/* empty css        */const a=e({},[["render",function(e,a){const o=r("RouterView");return s(),t(o)}],["__file","sidebar.vue"]]);export{a as default};

@@ -1,1 +1,0 @@
-import{e as s,U as a,o as e,g as n,j as o,a2 as r}from"../../index-BnGzoMia.js";/* empty css        */const t=r(s({__name:"index",setup(s){const r=a();return e((()=>{r.push("/navbar/dashboards")})),(s,a)=>(n(),o("div"))}}),[["__file","index.vue"]]);export{t as default};

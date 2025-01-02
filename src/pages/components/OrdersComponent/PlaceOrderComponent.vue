@@ -1,6 +1,12 @@
 <script setup lang="ts">
-const panels = usePanels();
+import { useProducts } from "/@src/stores/products";
+import { useNotyf } from "/@src/composables/notyf";
 
+import moment from "moment";
+const productsStore = useProducts();
+const notyf = useNotyf();
+const panels = usePanels();
+const openOrderModal = ref(false);
 const props = withDefaults(
   defineProps<{
     activeTab?: "project" | "team" | "tasks";
@@ -14,32 +20,41 @@ const productCount = ref(0);
 const tab = ref(props.activeTab);
 const filterTasks = ref(0);
 import { popovers } from "/@src/data/users/userPopovers";
+import { generateOrderNumber } from "/@src/commonScripts/useSupportElements";
+import { string } from "zod";
+import PlaceOrderInfoModal from "./PlaceOrderInfoModal.vue";
 
 const data = ref([
-  {
-    name: "Website Redesign",
-    unit: "hrs",
-    quantity: 54,
-    rate: 24,
-  },
-  {
-    name: "Logo Design",
-    unit: "hrs",
-    quantity: 12,
-    rate: 24,
-  },
-  {
-    name: "Custom Illustrations",
-    unit: "hrs",
-    quantity: 7,
-    rate: 32,
-  },
+  // {
+  //   name: "",
+  //   quantity: 0,
+  //   price: 0,
+  // },
 ]);
 
-const vatRate = 0.1;
+const orderData = ref({
+  orderNumber: "",
+  storeName: "",
+  ownerName: "",
+  phoneNumber: "",
+  description: "",
+  dateIssued: "",
+  paymentDate: "",
+  totalAmount: 0,
+  totalItems: 0,
+  itemsList: [
+    {
+      name: "",
+      quantity: "",
+      price: 0,
+    },
+  ],
+});
+
+const vatRate = 0;
 const totalData = computed(() => {
   const subtotal = data.value.reduce((acc, item) => {
-    return acc + item.quantity * item.rate;
+    return acc + item.quantity * item.price;
   }, 0);
   const vatValue = subtotal * vatRate;
   const total = subtotal + vatValue;
@@ -62,7 +77,7 @@ const totalData = computed(() => {
 
 const usdFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
-  currency: "USD",
+  currency: "PKR",
 });
 
 const columns = {
@@ -71,12 +86,8 @@ const columns = {
     grow: true,
     inverted: true,
   },
-  unit: {
-    label: "Unit",
-    align: "end",
-  },
   quantity: "Quantity",
-  rate: {
+  price: {
     label: "Rate",
     inverted: true,
     format: (value: any) => usdFormatter.format(value),
@@ -85,7 +96,14 @@ const columns = {
     label: "Subtotal",
     inverted: true,
     format: (value: any, row: any) =>
-      usdFormatter.format(row.quantity * row.rate),
+      usdFormatter.format(row.quantity * row.price),
+  },
+  action: {
+    label: "Action",
+    inverted: true,
+    remove: (value: any, row: any, rowIndex: number) => {
+      data.value.splice(rowIndex, 1);
+    },
   },
 } as const;
 
@@ -110,763 +128,232 @@ const participants = [
   { picture: "https://media.cssninja.io/content/avatars/25.jpg" },
   { picture: "https://media.cssninja.io/content/avatars/25.jpg" },
 ];
+const orderNumber = ref("");
+const formattedDate = ref("");
+const addProduct = (product: any) => {
+  if (!data.value.find((p) => p.id === product.id)) {
+    data.value.push({
+      ...product,
+      quantity: 1,
+      action: "Remove",
+    });
+  } else {
+    notyf.info("Product already added");
+  }
+};
+
+const removeProduct = (product: any) => {
+  data.value = data.value.filter((p) => p.id !== product.id);
+};
+
+const openOrderModalHandler = () => {
+  openOrderModal.value = !openOrderModal.value;
+};
+onMounted(() => {
+  productsStore.getStoreProducts();
+  orderData.value.orderNumber = generateOrderNumber();
+  const currentDate = moment().format("YYYY-MM-DD");
+  orderData.value.dateIssued = moment(currentDate).format("ddd, MMMM DD YYYY");
+});
 </script>
 
 <template>
-  <div class="project-details">
-    <div class="tabs-wrapper is-triple-slider">
-      <div class="tab-content is-active">
-        <div class="columns project-details-inner">
-          <div class="column is-8">
-            <div class="invoice-wrapper">
-              <div class="invoice-header">
-                <div class="left">
-                  <h3>Invoice FC-456-14</h3>
-                </div>
-                <div class="right">
-                  <div class="controls">
-                    <a class="action">
-                      <VIcon icon="lucide:printer" />
-                    </a>
-                    <a class="action">
-                      <VIcon icon="lucide:download-cloud" />
-                    </a>
-                    <a class="action">
-                      <VIcon icon="lucide:mail" />
-                    </a>
-                    <a class="action">
+  <div>
+    <div class="project-details">
+      <div class="tabs-wrapper is-triple-slider">
+        <div class="tab-content is-active">
+          <div class="columns project-details-inner">
+            <div class="column is-8">
+              <div class="invoice-wrapper">
+                <div class="invoice-header">
+                  <div class="left">
+                    <h3>Order {{ orderData.orderNumber }}</h3>
+                  </div>
+                  <div class="right">
+                    <div class="controls">
+                      <a class="action">
+                        <VIcon icon="lucide:printer" />
+                      </a>
+                      <a class="action">
+                        <VIcon icon="lucide:download-cloud" />
+                      </a>
+                      <a class="action">
+                        <VIcon
+                          @click="openOrderModalHandler"
+                          icon="lucide:pen"
+                        />
+                      </a>
+                      <!-- <a class="action">
                       <VIcon icon="lucide:arrow-left" />
-                    </a>
+                    </a> -->
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="invoice-body">
-                <div class="invoice-card">
-                  <div class="invoice-section is-flex is-bordered">
-                    <Tippy
-                      class="has-help-cursor"
-                      interactive
-                      placement="bottom-start"
-                    >
-                      <VAvatar
-                        size="large"
-                        picture="https://media.cssninja.io/content/avatars/13.jpg"
-                      />
-                      <template #content>
-                        <UserPopoverContent :user="popovers.user13" />
-                      </template>
-                    </Tippy>
-
-                    <div class="meta">
-                      <h3>Tara Svenson</h3>
-                      <span>tarasvenson@vuero.io</span>
-                      <span>+1 546-5491</span>
-                    </div>
-                    <div class="end">
-                      <h3>Invoice FC-456-14</h3>
-                      <span>Issued: May 27, 2020</span>
-                      <span>Payment Due: June 27, 2015</span>
-                    </div>
-                  </div>
-
-                  <div class="invoice-section is-flex is-bordered">
-                    <VAvatar
-                      size="large"
-                      class="is-customer"
-                      picture="https://media.cssninja.io/content/photos/brands/airbnb.svg"
-                    />
-
-                    <div class="meta">
-                      <h3>Airbnb</h3>
-                      <span>888 Brannan St, San Francisco,</span>
-                      <span>CA 94103, USA</span>
-                    </div>
-                    <div class="end is-left">
-                      <h3>Description</h3>
-                      <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Quod equidem non reprehendo.
-                      </p>
-                    </div>
-                  </div>
-                  <div class="invoice-section">
-                    <VFlexTable
-                      :data="data"
-                      :columns="columns"
-                      rounded
-                      reactive
-                    >
-                      <template #body-cell="{ column, row }">
-                        <template v-if="column.key === 'quantity'">
-                          <VControl>
-                            <VField>
-                              <VInput
-                                v-model="row[column.key]"
-                                type="number"
-                                min="0"
-                              />
-                            </VField>
-                          </VControl>
-                        </template>
-                      </template>
-                    </VFlexTable>
-
-                    <VFlexTable
-                      subtable
-                      :data="totalData"
-                      :columns="totalColumns"
-                    >
-                      <template #body-cell="{ column, value, row }">
-                        <template v-if="column.key === 'label'">
-                          <span class="table-label">{{ value }}</span>
-                        </template>
-                        <template
-                          v-else-if="
-                            column.key === 'value' && row.label === 'Total'
-                          "
+                <div class="invoice-body">
+                  <div class="invoice-card">
+                    <div class="invoice-section is-flex is-bordered">
+                      <div class="meta">
+                        <h3>
+                          {{
+                            orderData.storeName ? orderData.storeName : "N/A"
+                          }}
+                        </h3>
+                        <span>{{
+                          orderData.ownerName ? orderData.ownerName : "N/A"
+                        }}</span>
+                        <span>{{
+                          orderData.phoneNumber ? orderData.phoneNumber : "N/A"
+                        }}</span>
+                      </div>
+                      <div class="end">
+                        <h3>
+                          Order#
+                          {{
+                            orderData.orderNumber
+                              ? orderData.orderNumber
+                              : "N/A"
+                          }}
+                        </h3>
+                        <span
+                          >Issued:
+                          {{
+                            orderData.dateIssued ? orderData.dateIssued : "N/A"
+                          }}</span
                         >
-                          <span class="table-total is-bigger">{{ value }}</span>
+                        <span
+                          >Payment Due:
+                          {{
+                            orderData.paymentDate
+                              ? orderData.paymentDate
+                              : "N/A"
+                          }}</span
+                        >
+                      </div>
+                    </div>
+
+                    <div class="invoice-section is-flex is-bordered">
+                      <div class="right is-left">
+                        <h3>Description</h3>
+                        <p>
+                          {{
+                            orderData.description
+                              ? orderData.description
+                              : "N/A"
+                          }}
+                        </p>
+                      </div>
+                    </div>
+                    <div v-if="data.length > 0" class="invoice-section">
+                      <VFlexTable
+                        :data="data"
+                        :columns="columns"
+                        rounded
+                        reactive
+                      >
+                        <template #body-cell="{ column, row }">
+                          <template v-if="column.key === 'quantity'">
+                            <VControl>
+                              <VField>
+                                <VInput
+                                  v-model="row[column.key]"
+                                  type="number"
+                                  min="0"
+                                />
+                              </VField>
+                            </VControl>
+                          </template>
                         </template>
-                        <template v-else>
-                          <span class="table-value">{{ value }}</span>
+                      </VFlexTable>
+
+                      <VFlexTable
+                        subtable
+                        :data="totalData"
+                        :columns="totalColumns"
+                      >
+                        <template #body-cell="{ column, value, row }">
+                          <template v-if="column.key === 'label'">
+                            <span class="table-label">{{ value }}</span>
+                          </template>
+                          <template
+                            v-else-if="
+                              column.key === 'value' && row.label === 'Total'
+                            "
+                          >
+                            <span class="table-total is-bigger">{{
+                              value
+                            }}</span>
+                          </template>
+                          <template v-else>
+                            <span class="table-value">{{ value }}</span>
+                          </template>
                         </template>
-                      </template>
-                    </VFlexTable>
+                      </VFlexTable>
+                    </div>
+                    <div v-else class="invoice-section">
+                      <VMessage color="info">
+                        No product added yet in the order, please add product
+                        from the list.
+                      </VMessage>
+                    </div>
+                    <div class="is-flex">
+                      <VButton class="right is-right">Complete Order</VButton>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="column is-4">
-            <div class="m-b-30 mt-4">
-              <h4 class="title is-5">Product List</h4>
-            </div>
+            <div class="column is-4">
+              <div class="m-b-30 mt-4">
+                <h4 class="title is-5">Product List</h4>
+              </div>
 
-            <div class="side-card">
-              <h4>Select Products</h4>
+              <div class="side-card">
+                <h4>Select Products</h4>
 
-              <VBlock center title="Sketch" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/sketch.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Illustrator" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/illustrator.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Photoshop" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/photoshop.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-              <VBlock center title="Sketch" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/sketch.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Illustrator" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/illustrator.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Photoshop" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/photoshop.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-              <VBlock center title="Sketch" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/sketch.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Illustrator" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/illustrator.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Photoshop" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/photoshop.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-              <VBlock center title="Sketch" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/sketch.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Illustrator" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/illustrator.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Photoshop" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/photoshop.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-              <VBlock center title="Sketch" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/sketch.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Illustrator" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/illustrator.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Photoshop" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/photoshop.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-              <VBlock center title="Sketch" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/sketch.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Illustrator" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/illustrator.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Photoshop" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/photoshop.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-              <VBlock center title="Sketch" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/sketch.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Illustrator" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/illustrator.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Photoshop" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/photoshop.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-              <VBlock center title="Sketch" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/sketch.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Illustrator" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/illustrator.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
-
-              <VBlock center title="Photoshop" subtitle="Design Software">
-                <template #icon>
-                  <VAvatar
-                    size="small"
-                    picture="/images/icons/stacks/photoshop.svg"
-                  />
-                </template>
-                <template #action>
-                  <span class="mr-2"> ({{ productCount }}) </span>
-                  <VTag
-                    @click="productCount -= 1"
-                    color="danger"
-                    label="-"
-                    rounded
-                    class="pointer"
-                  />
-                  <VTag
-                    @click="productCount += 1"
-                    color="green"
-                    class="ml-1 pointer"
-                    label="+"
-                    rounded
-                  />
-                </template>
-              </VBlock>
+                <VBlock
+                  v-for="product in productsStore.productList"
+                  :key="product.id"
+                  center
+                  :title="product.name"
+                  subtitle="Design Software"
+                >
+                  <template #icon>
+                    <VAvatar
+                      size="small"
+                      picture="/images/icons/stacks/sketch.svg"
+                    />
+                  </template>
+                  <template #action>
+                    <!-- <span class="mr-2"> ({{ productCount }}) </span> -->
+                    <VTag
+                      @click="removeProduct(product)"
+                      color="danger"
+                      label="Remove"
+                      rounded
+                      class="pointer"
+                    />
+                    <VTag
+                      @click="addProduct(product)"
+                      color="green"
+                      class="ml-1 pointer"
+                      label="Add"
+                      rounded
+                    />
+                  </template>
+                </VBlock>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <PlaceOrderInfoModal
+      v-if="openOrderModal"
+      :open-place-order-modal="openOrderModal"
+      :orderData="orderData"
+      @update:close-modal-handler="openOrderModal = false"
+    />
   </div>
 </template>
 

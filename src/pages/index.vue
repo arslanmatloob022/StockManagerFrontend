@@ -43,7 +43,7 @@ const handleLogin = async () => {
 };
 
 useHead({
-  title: "Stockify",
+  title: "StockVista",
 });
 </script>
 
