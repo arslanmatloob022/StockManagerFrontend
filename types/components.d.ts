@@ -300,6 +300,7 @@ declare module 'vue' {
     PopoverComplexDocumentation: typeof import('./../documentation/plugins/popover/popover-complex-documentation.md')['default']
     PopoverIconDocumentation: typeof import('./../documentation/plugins/popover/popover-icon-documentation.md')['default']
     PopoverPositionDocumentation: typeof import('./../documentation/plugins/popover/popover-position-documentation.md')['default']
+    ProductBatch: typeof import('./../src/components/product/ProductBatch.vue')['default']
     ProjectCardDropdown: typeof import('./../src/components/partials/dropdowns/ProjectCardDropdown.vue')['default']
     ProjectDetailsV1: typeof import('./../src/components/pages/layouts/projects/ProjectDetailsV1.vue')['default']
     ProjectListDropdown: typeof import('./../src/components/partials/dropdowns/ProjectListDropdown.vue')['default']

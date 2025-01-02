@@ -248,6 +248,7 @@ declare module 'vue-router/auto-routes' {
     '/sidebar/dashboards/sales': RouteRecordInfo<'/sidebar/dashboards/sales', '/sidebar/dashboards/sales', Record<never, never>, Record<never, never>>,
     '/sidebar/dashboards/soccer': RouteRecordInfo<'/sidebar/dashboards/soccer', '/sidebar/dashboards/soccer', Record<never, never>, Record<never, never>>,
     '/sidebar/dashboards/stock/': RouteRecordInfo<'/sidebar/dashboards/stock/', '/sidebar/dashboards/stock', Record<never, never>, Record<never, never>>,
+    '/sidebar/dashboards/stock/[id]': RouteRecordInfo<'/sidebar/dashboards/stock/[id]', '/sidebar/dashboards/stock/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/sidebar/dashboards/stocks': RouteRecordInfo<'/sidebar/dashboards/stocks', '/sidebar/dashboards/stocks', Record<never, never>, Record<never, never>>,
     '/sidebar/dashboards/users/': RouteRecordInfo<'/sidebar/dashboards/users/', '/sidebar/dashboards/users', Record<never, never>, Record<never, never>>,
     '/sidebar/dashboards/video': RouteRecordInfo<'/sidebar/dashboards/video', '/sidebar/dashboards/video', Record<never, never>, Record<never, never>>,
