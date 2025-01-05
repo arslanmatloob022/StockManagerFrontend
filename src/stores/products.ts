@@ -41,10 +41,10 @@ export const useProducts = defineStore("productsStore", () => {
     loading.value = true;
 
     try {
-      // const response = await api.get(`/product/store/${store.loggedStore.id}/`);
-      const response = await api.get(
-        `/product/store/90fea8e0-4b77-4b87-b638-70b4f7f23b60/`
-      );
+      const response = await api.get(`/product/store/${store.loggedStore.id}/`);
+      // const response = await api.get(
+      //   `/product/store/90fea8e0-4b77-4b87-b638-70b4f7f23b60/`
+      // );
 
       productList.value = response.data;
     } finally {
@@ -55,6 +55,7 @@ export const useProducts = defineStore("productsStore", () => {
   async function addProduct(payload: any) {
     loading.value = true;
     try {
+      payload.append("store", store.loggedStore.id);
       const response = await api.post(`/product/`, payload);
       notyf.success("Product added Successfully");
       getStoreProducts();
@@ -65,6 +66,7 @@ export const useProducts = defineStore("productsStore", () => {
   async function updateProduct(id: any, payload: any) {
     loading.value = true;
     try {
+      payload.append("store", store.loggedStore.id);
       const response = await api.patch(`/product/${id}/`, payload);
       notyf.info("Product updated Successfully");
       getStoreProducts();

@@ -9,7 +9,7 @@ const router = useRouter();
 const route = useRoute();
 const notyf = useNotyf();
 const token = useUserToken();
-const redirect = route.query.redirect as string;
+// const redirect = route.query.redirect as string;
 const controller = new AbortController(); // Create an AbortController instance
 const { signal } = controller;
 const userSession = useUserSession();
@@ -31,7 +31,7 @@ const handleLogin = async () => {
     if (resp.data.user.store) {
       store.loadStore(resp.data.user.store);
     }
-    notyf.dismissAll();
+    // notyf.dismissAll();
     router.push("/sidebar/dashboards");
     notyf.primary(`Welcome back, ${resp.data.user.username}`);
   } catch (err) {

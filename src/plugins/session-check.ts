@@ -46,7 +46,7 @@ export default definePlugin(async ({ router, pinia, event }) => {
     const token = useUserToken(event);
     if (to.meta.requiresAuth && !token.value) {
       return {
-        name: "/auth/login",
+        name: "/",
         // save the location we were at to come back later
         query: { redirect: to.fullPath },
       };

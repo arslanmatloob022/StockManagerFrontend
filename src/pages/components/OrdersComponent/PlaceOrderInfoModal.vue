@@ -37,12 +37,14 @@ const callOnSuccessHandler = () => {
 };
 
 const orderData = ref({
-  storeName: "",
-  ownerName: "",
+  customer_name: "",
+  customer_email: "",
+  shop_name: "",
+  status: "",
+  discount: "",
   description: "",
-  phoneNumber: "",
   orderNumber: "",
-  dateIssued: "",
+  date_issued: "",
   paymentDate: "",
   totalAmount: 0,
   totalItems: 0,
@@ -81,10 +83,10 @@ onMounted(() => {
     <template #content>
       <div class="columns is-multiline">
         <VField class="column is-6">
-          <VLabel>Store Name</VLabel>
+          <VLabel>Shop Name</VLabel>
           <VControl>
             <VInput
-              v-model="orderData.storeName"
+              v-model="orderData.shop_name"
               type="text"
               placeholder="Store Name"
             />
@@ -94,8 +96,8 @@ onMounted(() => {
           <VLabel>Owner Name</VLabel>
           <VControl>
             <VInput
-              v-model="orderData.ownerName"
-              type="number"
+              v-model="orderData.customer_name"
+              type="text"
               placeholder="Owner Name"
             />
           </VControl>
@@ -105,9 +107,9 @@ onMounted(() => {
           <VLabel>Phone Number</VLabel>
           <VControl>
             <VInput
-              v-model="orderData.phoneNumber"
-              type="phone"
-              placeholder="Phone Number"
+              v-model="orderData.customer_email"
+              type="email"
+              placeholder="Email"
             />
           </VControl>
         </VField>

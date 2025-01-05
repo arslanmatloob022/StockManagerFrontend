@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { useProducts } from "/@src/stores/products";
 import { useNotyf } from "/@src/composables/notyf";
-
+import { useApi } from "/@src/composables/useApi";
 import moment from "moment";
+import { useStore } from "/@src/stores/useStore";
+
+const store = useStore();
+const api = useApi();
 const productsStore = useProducts();
 const notyf = useNotyf();
 const panels = usePanels();
@@ -23,6 +27,7 @@ import { popovers } from "/@src/data/users/userPopovers";
 import { generateOrderNumber } from "/@src/commonScripts/useSupportElements";
 import { string } from "zod";
 import PlaceOrderInfoModal from "./PlaceOrderInfoModal.vue";
+import { convertToFormData } from "/@src/commonScripts/commonComponents";
 
 const data = ref([
   // {
@@ -33,22 +38,28 @@ const data = ref([
 ]);
 
 const orderData = ref({
-  orderNumber: "",
-  storeName: "",
-  ownerName: "",
-  phoneNumber: "",
+  customer_name: "",
+  customer_email: "",
+  shop_name: "",
+  status: "",
+  discount: "",
   description: "",
-  dateIssued: "",
+  orderNumber: "",
+  date_issued: "",
   paymentDate: "",
   totalAmount: 0,
   totalItems: 0,
-  itemsList: [
-    {
-      name: "",
-      quantity: "",
-      price: 0,
-    },
-  ],
+  // orderItems: [
+  //   {
+  //     product: "Free",
+  //     quantity: "12",
+  //     batch: "23132414",
+  //     store: store.loggedStore.id,
+  //     price_per_unit: 678,
+  //     price: 110,
+  //     subtotal: 40,
+  //   },
+  // ],
 });
 
 const vatRate = 0;
@@ -135,10 +146,23 @@ const addProduct = (product: any) => {
     data.value.push({
       ...product,
       quantity: 1,
-      action: "Remove",
     });
   } else {
     notyf.info("Product already added");
+  }
+};
+
+const placeOrder = async () => {
+  try {
+    const items = JSON.stringify(data.value);
+    // delete orderData.value.orderItems;
+    const formData = convertToFormData(orderData.value, "");
+    formData.append("orderItems", items);
+    const resp = await api.post("/order/create-order/", formData);
+    notyf.success("Order placed successfully");
+  } catch (Err) {
+    console.log(Err);
+    notyf.error("Something went wrong");
   }
 };
 
@@ -195,14 +219,18 @@ onMounted(() => {
                       <div class="meta">
                         <h3>
                           {{
-                            orderData.storeName ? orderData.storeName : "N/A"
+                            orderData.shop_name ? orderData.shop_name : "N/A"
                           }}
                         </h3>
                         <span>{{
-                          orderData.ownerName ? orderData.ownerName : "N/A"
+                          orderData.customer_name
+                            ? orderData.customer_name
+                            : "N/A"
                         }}</span>
                         <span>{{
-                          orderData.phoneNumber ? orderData.phoneNumber : "N/A"
+                          orderData.customer_email
+                            ? orderData.customer_email
+                            : "N/A"
                         }}</span>
                       </div>
                       <div class="end">
@@ -217,7 +245,9 @@ onMounted(() => {
                         <span
                           >Issued:
                           {{
-                            orderData.dateIssued ? orderData.dateIssued : "N/A"
+                            orderData.date_issued
+                              ? orderData.date_issued
+                              : "N/A"
                           }}</span
                         >
                         <span
@@ -296,7 +326,9 @@ onMounted(() => {
                       </VMessage>
                     </div>
                     <div class="is-flex">
-                      <VButton class="right is-right">Complete Order</VButton>
+                      <VButton @click="placeOrder" class="right is-right"
+                        >Complete Order</VButton
+                      >
                     </div>
                   </div>
                 </div>
