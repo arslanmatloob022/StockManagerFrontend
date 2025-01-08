@@ -156,9 +156,14 @@ const placeOrder = async () => {
   try {
     const items = JSON.stringify(data.value);
     // delete orderData.value.orderItems;
-    const formData = convertToFormData(orderData.value, "");
-    formData.append("orderItems", items);
-    const resp = await api.post("/order/create-order/", formData);
+    // const formData = convertToFormData(orderData.value, "");
+    // formData.append("orderItems", items);
+    let payload = {
+      orderItems: JSON.stringify(data.value),
+      ...orderData.value,
+    };
+    console.log("payload", payload);
+    const resp = await api.post("/order/create-order/", payload);
     notyf.success("Order placed successfully");
   } catch (Err) {
     console.log(Err);
@@ -169,7 +174,9 @@ const placeOrder = async () => {
 const removeProduct = (product: any) => {
   data.value = data.value.filter((p) => p.id !== product.id);
 };
-
+const orderDataSave = (orderMetaData: any) => {
+  orderData.value = orderMetaData;
+};
 const openOrderModalHandler = () => {
   openOrderModal.value = !openOrderModal.value;
 };
@@ -384,6 +391,7 @@ onMounted(() => {
       v-if="openOrderModal"
       :open-place-order-modal="openOrderModal"
       :orderData="orderData"
+      @callOnSuccess="orderDataSave"
       @update:close-modal-handler="openOrderModal = false"
     />
   </div>

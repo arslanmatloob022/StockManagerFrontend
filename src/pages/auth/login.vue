@@ -1,38 +1,38 @@
 <script setup lang="ts">
-type StepId = 'login' | 'forgot-password'
-const step = ref<StepId>('login')
-const isLoading = ref(false)
-const router = useRouter()
-const route = useRoute()
-const notyf = useNotyf()
-const token = useUserToken()
-const redirect = route.query.redirect as string
+type StepId = "login" | "forgot-password";
+const step = ref<StepId>("login");
+const isLoading = ref(false);
+const router = useRouter();
+const route = useRoute();
+const notyf = useNotyf();
+const token = useUserToken();
+// const redirect = route.query.redirect as string
 
 const handleLogin = async () => {
   if (!isLoading.value) {
-    isLoading.value = true
+    isLoading.value = true;
 
-    await sleep(2000)
-    console.log('set token logged-in')
-    token.value = 'logged-in'
+    await sleep(2000);
+    console.log("set token logged-in");
+    token.value = "logged-in";
 
-    notyf.dismissAll()
-    notyf.primary('Welcome back, Erik Kovalsky')
+    notyf.dismissAll();
+    notyf.primary("Welcome back, Erik Kovalsky");
 
-    if (redirect) {
-      router.push(redirect)
-    }
-    else {
-      router.push('/sidebar/dashboards')
-    }
+    // if (redirect) {
+    //   router.push(redirect)
+    // }
+    // else {
+    //   router.push('/sidebar/dashboards')
+    // }
 
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 useHead({
-  title: 'Auth Login 1 - Vuero',
-})
+  title: "Auth Login 1 - Vuero",
+});
 </script>
 
 <template>
@@ -50,7 +50,7 @@ useHead({
                     class="hero-image"
                     src="/images/illustrations/login/station.svg"
                     alt=""
-                  >
+                  />
                 </div>
               </div>
             </div>
@@ -59,31 +59,19 @@ useHead({
       </div>
       <div class="column is-4 is-relative">
         <div class="top-tools">
-          <RouterLink
-            to="/"
-            class="top-logo"
-          >
-            <AnimatedLogo
-              width="38px"
-              height="38px"
-            />
+          <RouterLink to="/" class="top-logo">
+            <AnimatedLogo width="38px" height="38px" />
           </RouterLink>
 
           <VDarkmodeToggle />
         </div>
         <div class="is-form">
           <div class="is-form-inner">
-            <div
-              class="form-text"
-              :class="[step !== 'login' && 'is-hidden']"
-            >
+            <div class="form-text" :class="[step !== 'login' && 'is-hidden']">
               <h2>Sign In</h2>
               <p>Welcome back to your account.</p>
             </div>
-            <div
-              class="form-text"
-              :class="[step === 'login' && 'is-hidden']"
-            >
+            <div class="form-text" :class="[step === 'login' && 'is-hidden']">
               <h2>Recover Account</h2>
               <p>Reset your account password.</p>
             </div>
@@ -107,57 +95,32 @@ useHead({
 
               <VField>
                 <VControl icon="lnil lnil-envelope autv-icon">
-                  <VLabel class="auth-label">
-                    Email Address
-                  </VLabel>
-                  <VInput
-                    type="email"
-                    autocomplete="current-password"
-                  />
+                  <VLabel class="auth-label"> Email Address </VLabel>
+                  <VInput type="email" autocomplete="current-password" />
                 </VControl>
               </VField>
               <VField>
                 <VControl icon="lnil lnil-lock-alt autv-icon">
-                  <VLabel class="auth-label">
-                    Password
-                  </VLabel>
-                  <VInput
-                    type="password"
-                    autocomplete="current-password"
-                  />
+                  <VLabel class="auth-label"> Password </VLabel>
+                  <VInput type="password" autocomplete="current-password" />
                 </VControl>
               </VField>
 
               <VField>
                 <VControl class="is-flex">
-                  <VLabel
-                    raw
-                    class="remember-toggle"
-                  >
-                    <VInput
-                      raw
-                      type="checkbox"
-                    />
+                  <VLabel raw class="remember-toggle">
+                    <VInput raw type="checkbox" />
 
                     <span class="toggler">
                       <span class="active">
-                        <VIcon
-                          icon="lucide:check"
-                        />
+                        <VIcon icon="lucide:check" />
                       </span>
                       <span class="inactive">
-                        <VIcon
-                          icon="lucide:circle"
-                        />
+                        <VIcon icon="lucide:circle" />
                       </span>
                     </span>
                   </VLabel>
-                  <VLabel
-                    raw
-                    class="remember-me"
-                  >
-                    Remember Me
-                  </VLabel>
+                  <VLabel raw class="remember-me"> Remember Me </VLabel>
                   <a
                     tabindex="0"
                     role="button"
@@ -198,19 +161,15 @@ useHead({
               @submit.prevent
             >
               <p class="recover-text">
-                Enter your email and click on the confirm button to reset your password.
-                We'll send you an email detailing the steps to complete the procedure.
+                Enter your email and click on the confirm button to reset your
+                password. We'll send you an email detailing the steps to
+                complete the procedure.
               </p>
 
               <VField>
                 <VControl icon="lnil lnil-envelope autv-icon">
-                  <VLabel class="auth-label">
-                    Email Address
-                  </VLabel>
-                  <VInput
-                    type="email"
-                    autocomplete="current-password"
-                  />
+                  <VLabel class="auth-label"> Email Address </VLabel>
+                  <VInput type="email" autocomplete="current-password" />
                 </VControl>
               </VField>
               <div class="button-wrap">
@@ -573,7 +532,8 @@ useHead({
 
       .active,
       .inactive {
-        transform: translateX(calc(var(--transform-direction) * 100%)) rotate(360deg);
+        transform: translateX(calc(var(--transform-direction) * 100%))
+          rotate(360deg);
       }
 
       .active {

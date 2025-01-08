@@ -55,8 +55,8 @@ const fetchOrderData = async () => {};
 const UpdateOrderInfoHandler = async () => {
   try {
     loading.value = true;
-    closeModalHandler();
     callOnSuccessHandler();
+    closeModalHandler();
   } catch (err) {
     console.error("Error while adding/updating product:", err);
     notyf.error("An error occurred. Please try again.");

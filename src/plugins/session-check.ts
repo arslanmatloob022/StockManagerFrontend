@@ -42,14 +42,14 @@ export default definePlugin(async ({ router, pinia, event }) => {
 
   // 2. If the page requires auth, check if user is logged in
   // if not, redirect to login page.
-  router.beforeEach((to) => {
-    const token = useUserToken(event);
-    if (to.meta.requiresAuth && !token.value) {
-      return {
-        name: "/",
-        // save the location we were at to come back later
-        query: { redirect: to.fullPath },
-      };
-    }
-  });
+  // router.beforeEach((to) => {
+  //   const token = useUserToken(event);
+  //   if (to.meta.requiresAuth && !token.value) {
+  //     return {
+  //       name: "/",
+  //       // save the location we were at to come back later
+  //       query: { redirect: to.fullPath },
+  //     };
+  //   }
+  // });
 });
