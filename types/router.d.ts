@@ -103,6 +103,7 @@ declare module 'vue-router/auto-routes' {
     '/components/radio': RouteRecordInfo<'/components/radio', '/components/radio', Record<never, never>, Record<never, never>>,
     '/components/snack': RouteRecordInfo<'/components/snack', '/components/snack', Record<never, never>, Record<never, never>>,
     '/components/StockComponents/AddUpdateProduct': RouteRecordInfo<'/components/StockComponents/AddUpdateProduct', '/components/StockComponents/AddUpdateProduct', Record<never, never>, Record<never, never>>,
+    '/components/StockComponents/BtachesList': RouteRecordInfo<'/components/StockComponents/BtachesList', '/components/StockComponents/BtachesList', Record<never, never>, Record<never, never>>,
     '/components/StockComponents/ItemsList': RouteRecordInfo<'/components/StockComponents/ItemsList', '/components/StockComponents/ItemsList', Record<never, never>, Record<never, never>>,
     '/components/StoresComponents/StoreModal': RouteRecordInfo<'/components/StoresComponents/StoreModal', '/components/StoresComponents/StoreModal', Record<never, never>, Record<never, never>>,
     '/components/StoresComponents/StoresList': RouteRecordInfo<'/components/StoresComponents/StoresList', '/components/StoresComponents/StoresList', Record<never, never>, Record<never, never>>,
